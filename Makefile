@@ -23,7 +23,7 @@ destroy:
 install: venv
 	@. .venv/bin/activate \
 	&& pip install --upgrade pip \
-	&& pip install -r requirements.txt;
+	&& pip install -r requirements.txt -r dev-requirements.txt;
 	
 .PHONY: venv
 venv:
@@ -45,3 +45,7 @@ unit-test:
 
 .PHONY: tests
 tests: check-tests unit-test integration-test functional-test
+
+.PHONY: run-api
+run-api: 
+	@. .venv/bin/activate; DEBUG=True python run.py
