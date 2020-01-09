@@ -1,4 +1,4 @@
-from save_the_giphies.giphy.retriever import Retriever
+from save_the_giphies.libraries.retriever import Retriever
 from save_the_giphies.config import config
 import unittest
 from unittest.mock import patch, MagicMock
@@ -11,7 +11,7 @@ class TestRetriever(unittest.TestCase):
     def tearDown(self):
         self.retriever = None
 
-    @patch("save_the_giphies.giphy.retriever.urlopen")
+    @patch("save_the_giphies.libraries.retriever.urlopen")
     def test_retrieve_giphies(self, mock_urlopen):
         mm = MagicMock()
         mm.getcode.return_value = 200

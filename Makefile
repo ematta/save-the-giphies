@@ -11,9 +11,9 @@ check-code:
 .PHONY: check-tests
 check-tests: 
 	@. .venv/bin/activate; \
-	mypy test; \
-	black test --exclude .venv; \
-	flake8 test --exclude .venv
+	mypy tests; \
+	black tests --exclude .venv; \
+	flake8 tests --exclude .venv
 
 .PHONY: destroy
 destroy:
@@ -33,15 +33,15 @@ venv:
 
 .PHONY: functional-test
 functional-test:
-	@. .venv/bin/activate; python -m unittest discover test/functional -v
+	@. .venv/bin/activate; python -m unittest discover tests/functional -v
 
 .PHONY: integration-test
 integration-test:
-	@. .venv/bin/activate; python -m unittest discover test/integration -v
+	@. .venv/bin/activate; python -m unittest discover tests/integration -v
 
 .PHONY: unit-test
 unit-test:
-	@. .venv/bin/activate; python -m unittest discover test/unit -v
+	@. .venv/bin/activate; python -m unittest discover tests/unit -v
 
 .PHONY: tests
 tests: check-tests unit-test integration-test functional-test
