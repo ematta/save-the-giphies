@@ -1,4 +1,4 @@
-from save_the_giphies.giphy.retriever import Retriever  # type: ignore
+from save_the_giphies.libraries.retriever import Retriever  # type: ignore
 import unittest
 
 

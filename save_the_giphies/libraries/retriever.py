@@ -53,3 +53,6 @@ class Retriever:
         body = res.read()
         payload = json.loads(body.decode("utf-8"))
         return payload
+
+
+retriever = Retriever()

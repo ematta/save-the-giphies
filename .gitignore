@@ -6,3 +6,4 @@ _pycache_
 .mypy_cache/
 .vscode/
 *.pyc
+*.ignore

@@ -1,3 +1,7 @@
+# Flask
+Flask==1.1.1
+Flask-Cors==3.0.8
+
 # Other
 black==19.10b0
 flake8==3.7.9
