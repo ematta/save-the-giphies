@@ -26,4 +26,4 @@ jobs:
         make install check-code
     - name: Test
       run: |
-        make install tests
+        make install unit-test integration-test
