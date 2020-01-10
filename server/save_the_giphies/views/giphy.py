@@ -9,8 +9,9 @@ bp = Blueprint(
     url_prefix="/giphy",
 )
 
-@bp.route("/")
+
+@bp.route("/", methods=["GET"])
 def index():
-    search_query = request.args.get("query")
+    search_query = request.args.get("q")
     response = retriever.retrieve_giphies(query=search_query)
     return jsonify(response)

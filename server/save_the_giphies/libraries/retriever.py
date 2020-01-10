@@ -49,7 +49,8 @@ class Retriever:
         Returns:
             Dict: The json payload from giphy
         """
-        res = urlopen(f"{self.search_url()}?{self.search_query(query = query)}")
+        url = f"{self.search_url()}?{self.search_query(query = query)}"
+        res = urlopen(url)
         body = res.read()
         payload = json.loads(body.decode("utf-8"))
         return payload
