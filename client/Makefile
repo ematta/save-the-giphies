@@ -1,8 +1,8 @@
 SHELL = /bin/bash
 
 
-.PHONY: run
-run: fix
+.PHONY: debug
+debug: fix
 	@npm run serve
 
 .PHONY: fix
