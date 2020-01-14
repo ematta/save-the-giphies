@@ -10,7 +10,7 @@ class TestRetriever(unittest.TestCase):
         self.retriever = None
 
     def test_get_retriever(self):
-        res = self.retriever.retrieve_giphies(query="test")
+        res = self.retriever.retrieve_giphies(q="test")
         self.assertTrue(len(res) > 0)
         for data in res["data"]:
             self.assertTrue(data["rating"] == "g")

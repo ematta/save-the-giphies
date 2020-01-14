@@ -10,8 +10,25 @@ class TestGiphy(unittest.TestCase):
         app.config["DEBUG"] = False
         self.app = app.test_client()
 
-    def test_index(self):
-        response = self.app.get("/giphy?q=test", follow_redirects=True)
+    def test_search(self):
+        response = self.app.post(
+            "/giphy/search",
+            json={"q": "test"},
+            headers={"Accept": "application/json"},
+            follow_redirects=True,
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode("utf-8"))["data"]
         self.assertTrue(len(data) == 25)
+        self.assertTrue(data[0]["rating"] == "g")
+
+    def test_search_limit(self):
+        response = self.app.post(
+            "/giphy/search",
+            json={"q": "test", "limit": 100},
+            headers={"Accept": "application/json"},
+            follow_redirects=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode("utf-8"))["data"]
+        self.assertTrue(len(data) == 100)
