@@ -8,8 +8,5 @@ export default {
   data: () => ({
     id: '',
   }),
-  beforeMount() {
-    this.id = this.$route.params.id
-  },
 };
 </script>
