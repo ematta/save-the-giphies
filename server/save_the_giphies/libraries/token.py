@@ -21,7 +21,7 @@ def token_required(f):
             )
         try:
             token = auth_headers[1]
-            data = jwt.decode(token, config.config["SECRET_KEY"])
+            data = jwt.decode(token, config.secret_key)
             user = User.query.filter_by(email=data["sub"]).first()
             if not user:
                 return (
@@ -39,8 +39,7 @@ def token_required(f):
                 ),
                 401,
             )
-        except (jwt.InvalidTokenError, Exception) as e:
-            print(e)
+        except jwt.InvalidTokenError as e:
             return (
                 jsonify(
                     {

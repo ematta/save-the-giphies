@@ -1,10 +1,11 @@
 import unittest
 import json
-from save_the_giphies.app import app
+from save_the_giphies.runner import create_app
 
 
 class TestGiphy(unittest.TestCase):
     def setUp(self):
+        app = create_app()
         app.config["TESTING"] = True
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False

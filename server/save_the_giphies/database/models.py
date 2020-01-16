@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
-from save_the_giphies.database.database import Base
+from save_the_giphies.database.engine import Base, db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -49,8 +49,14 @@ class Giphy(Base):
         self.giphy: str = giphy
 
     @classmethod
-    def all_giphies(cls, user: int):
-        return cls.query.filter_by(user=user).all()
+    def all_giphies(cls, user_id: int):
+        return cls.query.filter_by(user_id=user_id).all()
+
+    @classmethod
+    def delete_giphy(cls, user_id: int, giphy: str):
+        giphy = cls.query.filter_by(user_id=user_id, giphy=giphy).first()
+        db_session.delete(giphy)
+        db_session.commit()
 
     def to_dict(self):
-        return dict(id=self.id, user=self.user, giphy=self.giphy)
+        return dict(id=self.id, user_id=self.user_id, giphy=self.giphy)

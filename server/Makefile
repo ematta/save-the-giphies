@@ -1,10 +1,10 @@
 SHELL = /bin/bash
+.DEFAULT_GOAL := all
 
-
-.PHONY: debug
-debug: install
+.PHONY: all
+all: install
 	@. .venv/bin/activate; \
-	DEBUG=True python run.py
+	DEBUG=True python app.py
 
 .PHONY: check-code
 check-code: 

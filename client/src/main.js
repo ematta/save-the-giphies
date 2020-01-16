@@ -4,6 +4,8 @@ import router from '@/router';
 import store from '@/store';
 
 Vue.config.productionTip = false;
+// eslint-disable-next-line
+Vue.prototype.$log = console.log;
 
 new Vue({
   router,

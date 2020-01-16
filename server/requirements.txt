@@ -8,11 +8,3 @@ psycopg2==2.8.4
 
 # Security
 PyJWT==1.7.1
-
-# mypy
-mypy==0.761
-sqlalchemy-stubs==0.3
-
-# Other
-black==19.10b0
-flake8==3.7.9

@@ -5,20 +5,17 @@
         <div>
           <img v-bind:src="result.images.preview_gif.url" />
         </div>
-        <div>
-          {{ result.title }}
-          <br />
-          <a class="button is-large is-primary" @click.stop="save">Save gif</a>
+        <div v-if="$store.getters.isAuthenticated === true">
+          <a class="button is-large is-primary" @click.stop="save(result.id)">Save gif</a>
         </div>
       </div>
       <div class="column is-offset-one-quarter is-half">
         <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-          <a href="#" class="pagination-previous" @click.stop="backwards">
-            <i class="fa fa-chevron-left" aria-hidden="true"></i> &nbsp;&nbsp; Back
+          <a  class="pagination-previous" @click.stop="backwards">
+            Back
           </a>
-          <a href="#" class="pagination-next" @click.stop="forward">
-            Next &nbsp;&nbsp;
-            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+          <a class="pagination-next" @click.stop="forward">
+            Next
           </a>
         </nav>
       </div>
@@ -43,6 +40,9 @@ export default {
     },
   },
   methods: {
+    save(id) {
+      this.$store.dispatch('saveUserGiphy', id);
+    },
     forward() {
       const newPageNumber = this.page + 1;
       this.$store.commit('setPage', newPageNumber);

@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
-from save_the_giphies.views import giphy
-from save_the_giphies.views import user
-from save_the_giphies.database.database import db_session
+from save_the_giphies.routes import giphy
+from save_the_giphies.routes import user
+from save_the_giphies.database.engine import db_session
 from save_the_giphies.config import config
 
 
@@ -22,6 +22,3 @@ def create_app():
         db_session.remove()
 
     return app
-
-
-app = create_app()

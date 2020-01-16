@@ -1,3 +1,3 @@
-from save_the_giphies.database.database import init_db
+from save_the_giphies.database.engine import init_db
 
 init_db()

@@ -4,9 +4,9 @@ import json
 
 
 class Retriever:
-    def url(self):
+    def url(self, endpoint):
         host = "/".join(
-            [config.giphy_host, config.giphy_version, config.giphy_search_endpoint]
+            [config.giphy_host, config.giphy_version, endpoint]
         )
         return f"{config.giphy_schema}://{host}"
 
@@ -18,8 +18,9 @@ class Retriever:
         Returns:
             Dict: The json payload from giphy
         """
-        url: str = f"{url}/gifs/{giphy_id}"
-        res  = urlopen(url)
+        url = self.url(config.giphy_gifs_endpoint)
+        host = f"{url}/{giphy_id}?api_key={config.giphy_api_key}"
+        res = urlopen(host)
         body = res.read()
         payload = json.loads(body.decode("utf-8"))
         return payload
@@ -44,9 +45,7 @@ class Retriever:
         Returns:
             Dict: The json payload from giphy
         """
-        url = "/".join(
-            [config.giphy_host, config.giphy_version, config.giphy_search_endpoint]
-        )
+        url = self.url(config.giphy_search_endpoint)
         query = "&".join(
             [
                 f"api_key={config.giphy_api_key}",
@@ -57,7 +56,7 @@ class Retriever:
                 f"lang={lang}",
             ]
         )
-        url = f"{config.giphy_schema}://{url}?{query}"
+        url = f"{url}?{query}"
         res = urlopen(url)
         body = res.read()
         payload = json.loads(body.decode("utf-8"))

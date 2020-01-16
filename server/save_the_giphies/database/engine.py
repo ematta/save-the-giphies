@@ -20,5 +20,8 @@ Base.query = db_session.query_property()  # type: ignore
 
 def init_db():
     import save_the_giphies.database.models  # noqa: ignore=F401
-
     Base.metadata.create_all(bind=engine)
+
+def drop_db():
+    import save_the_giphies.database.models   # noqa: ignore=F401
+    Base.metadata.drop_all(bind=engine)

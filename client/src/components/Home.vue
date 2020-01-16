@@ -1,6 +1,7 @@
 <template>
   <div>
     <div>
+      <!-- <h1> {{ $log(HOW TO GET LOGGER) }} </h1> -->
       <section class="hero is-primary">
         <div class="hero-body">
           <div class="container has-text-centered">
@@ -71,7 +72,10 @@ export default {
       return this.$root.$emit('changeView', 'login');
     },
     setProfile() {
-      return this.$root.$emit('changeView', 'profile');
+      this.$store.dispatch('getUserGiphies')
+        .then(() => {
+          this.$root.$emit('changeView', 'profile');
+        });
     },
     setRegister() {
       return this.$root.$emit('changeView', 'register');

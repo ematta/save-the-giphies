@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     register() {
-      this.$store.dispatch('registerUser', { email: this.email, password: this.password })
+      this.$store.dispatch('registerUser', { name: this.name, email: this.email, password: this.password })
         .then(() => this.$router.push('/'));
       this.$root.$emit('changeView', 'login');
     },

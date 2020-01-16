@@ -9,6 +9,7 @@ class Config:
     giphy_host: str = "api.giphy.com"
     giphy_version: str = os.getenv("GIPHY_API_VERSION", "v1")
     giphy_search_endpoint: str = "gifs/search"
+    giphy_gifs_endpoint: str = "gifs"
     giphy_api_key: Optional[str] = os.getenv("GIPHY_API_KEY")
     debug: Optional[bool] = bool(os.getenv("DEBUG"))
     database_url: str = os.environ["POSTGRES_URL"]

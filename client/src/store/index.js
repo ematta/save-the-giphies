@@ -1,7 +1,15 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { giphySearch, authenticate, register } from '@/api';
+import {
+  allGiphySearchApi,
+  loginUserApi,
+  registerUserApi,
+  saveUserGiphyApi,
+  getUserGiphiesApi,
+  getUserInfoApi,
+  deleteUserGiphyApi,
+} from '@/api';
 import { isValidJwt, EventBus } from '@/utility';
 
 Vue.use(Vuex);
@@ -16,19 +24,28 @@ const store = new Vuex.Store({
     view: 'search',
     jwt: '',
     user: {},
+    flash: {},
+    giphies: {},
   },
   actions: {
     login(context, user) {
-      context.commit('setUser', { user });
-      return authenticate(user)
+      return loginUserApi(user)
         .then(response => context.commit('setJwt', { jwt: response.data }))
         .catch((error) => {
           EventBus.$emit('failedAuthentication', error);
         });
     },
+    getUserInfo(context) {
+      return getUserInfoApi(context.state.jwt.token)
+        .then((response) => {
+          context.commit('setUser', response);
+        })
+        .catch((error) => {
+          EventBus.$emit('failedAuthentication', error);
+        });
+    },
     registerUser(context, user) {
-      context.commit('setUser', { user });
-      return register(user)
+      return registerUserApi(user)
         .catch((error) => {
           EventBus.$emit('failedRegistering: ', error);
         });
@@ -39,13 +56,31 @@ const store = new Vuex.Store({
         offset: context.state.offset,
         limit: context.state.limit,
       };
-      return giphySearch(postData)
+      return allGiphySearchApi(postData)
         .then((response) => {
           context.commit('setResults', { response });
         });
     },
+    saveUserGiphy(context, giphyId) {
+      return saveUserGiphyApi(giphyId, context.state.jwt.token)
+        .then(context.commit('setFlash', 'Saved gif'));
+    },
+    deleteUserGiphy(context, giphyId) {
+      return deleteUserGiphyApi(giphyId, context.state.jwt.token)
+        .then(context.dispatch('getUserGiphies'));
+    },
+    getUserGiphies(context) {
+      return getUserGiphiesApi(context.state.jwt.token)
+        .then(response => context.commit('setUserGiphies', { response }));
+    },
   },
   mutations: {
+    setUserGiphies(state, payload) {
+      state.giphies = payload.response.data;
+    },
+    setFlash(state, msg) {
+      state.flash = msg;
+    },
     setQuery(state, query) {
       state.query = query;
     },
@@ -67,10 +102,11 @@ const store = new Vuex.Store({
     setJwt(state, jwt) {
       localStorage.token = jwt.jwt.token;
       state.jwt = jwt.jwt;
-      state.user = jwt.user;
     },
     setUser(state, user) {
-      state.user = user;
+      state.user.name = user.data.user.name;
+      state.user.email = user.data.user.email;
+      state.user.id = user.data.user.id;
     },
     logout(state) {
       state.jwt = '';
@@ -85,6 +121,8 @@ const store = new Vuex.Store({
     page: state => state.page,
     view: state => state.view,
     jwt: state => state.jwt,
+    user: state => state.user,
+    giphies: state => state.giphies,
     isAuthenticated: state => isValidJwt(state.jwt.token),
   },
 });
