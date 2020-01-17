@@ -1,7 +1,7 @@
 import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from save_the_giphies.database.models import User, Giphy, Base
+from save_the_giphies.database.models import User, Giphy, Base, Tag
 
 
 class TestModels(unittest.TestCase):
@@ -46,4 +46,22 @@ class TestModels(unittest.TestCase):
         self.assertEqual(giphy2["giphy"], found_second.giphy)
         with self.assertRaises(Exception) as ex:  # noqa: ignore=F841
             self.db_session.add(Giphy(**giphy2))
+            self.db_session.commit()
+
+    def test_tag(self):
+        user = User(**{"name": "foo", "password": "foobar", "email": "foo@bar.net"})
+        self.db_session.add(user)
+        self.db_session.commit()
+        giphy = Giphy(**{"user_id": user.id, "giphy": "test_giphy1"})
+        self.db_session.add(giphy)
+        self.db_session.commit()
+        tag = {"giphy_id": giphy.id, "tag": "animal"}
+        test_tag = Tag(**tag)
+        self.db_session.add(test_tag)
+        self.db_session.commit()
+        found = self.db_session.query(Tag).filter_by(id=test_tag.id).first()
+        self.assertEqual(tag["giphy_id"], found.giphy_id)
+        self.assertEqual(tag["tag"], found.tag)
+        with self.assertRaises(Exception) as ex:  # noqa: ignore=F841
+            self.db_session.add(Tag(**tag))
             self.db_session.commit()

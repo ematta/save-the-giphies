@@ -18,11 +18,10 @@ def search_all_giphies():
 def get_user_giphies(user):
     all_giphies = Giphy.all_giphies(user_id=user.id)
     results = [
-        retriever.retrieve_giphy(giphy.to_dict()['giphy'])
-        for giphy
-        in all_giphies
+        retriever.retrieve_giphy(giphy.to_dict()["giphy"]) for giphy in all_giphies
     ]
     return jsonify(results)
+
 
 @bp.route("/user/<giphy>", methods=["DELETE"])
 @token_required
@@ -30,13 +29,12 @@ def delete_user_giphy(user, giphy):
     Giphy.delete_giphy(user_id=user.id, giphy=giphy)
     return jsonify({"success": True}), 204
 
+
 @bp.route("/user/<giphy>", methods=["POST"])
 @token_required
 def save_user_giphy(user, giphy):
     try:
-        giphy = Giphy(user_id=user.id, giphy=giphy)
-        db_session.add(giphy)
-        db_session.commit()
+        Giphy.save_giphy(user_id=user.id, giphy=giphy)
         return jsonify({"success": True, "message": "Saved giphy"}), 201
     except Exception as ex:
         return jsonify({"success": False, "message": "Already in your profile"}), 405

@@ -5,9 +5,7 @@ import json
 
 class Retriever:
     def url(self, endpoint):
-        host = "/".join(
-            [config.giphy_host, config.giphy_version, endpoint]
-        )
+        host = "/".join([config.giphy_host, config.giphy_version, endpoint])
         return f"{config.giphy_schema}://{host}"
 
     def retrieve_giphy(self, giphy_id: str):

@@ -15,12 +15,11 @@ bp = Blueprint("user", __name__, url_prefix="/user",)
 def info(user):
     return jsonify({"success": True, "user": user.to_dict()}), 201
 
+
 @bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    user = User(**data)
-    db_session.add(user)
-    db_session.commit()
+    User.register(**data)
     return jsonify({"success": True, "message": "Registered user"}), 201
 
 
@@ -39,7 +38,7 @@ def login():
     response = {
         "token": token.decode("UTF-8"),
         "user": user.to_dict(),
-        "success": True, "message":
-        "Registered user"
+        "success": True,
+        "message": "Registered user",
     }
     return jsonify(response)
