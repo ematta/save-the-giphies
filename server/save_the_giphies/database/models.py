@@ -11,7 +11,7 @@ class User(Base):
     email = Column(String(120), unique=True, nullable=False)
     password = Column(String(120), nullable=False)
 
-    def __init__(self, email: str, password: str, name: str = None):
+    def __init__(self, email: str, password: str, name: str):
         self.name: str = name
         self.email: str = email
         self.password: str = generate_password_hash(password, method="sha256")
@@ -26,8 +26,8 @@ class User(Base):
         return user
 
     @classmethod
-    def register(cls, data: Dict):
-        user = User(**data)
+    def register(cls, email: str, name: str, password):
+        user = User(email=email, password=password, name=name)
         db_session.add(user)
         return db_session.commit()
 

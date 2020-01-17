@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const path = process.env.VUE_APP_BASE_URL;
 
-export function allGiphySearchApi(data) {
+export function giphySearchApi(data) {
   const url = `${path}/giphy/search`;
   return axios({
     method: 'post',

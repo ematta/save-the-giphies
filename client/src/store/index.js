@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import {
-  allGiphySearchApi,
+  giphySearchApi,
   loginUserApi,
   registerUserApi,
   saveUserGiphyApi,
@@ -17,7 +17,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     query: '',
-    response: {},
+    results: {},
     offset: 0,
     limit: 25,
     page: 1,
@@ -25,7 +25,8 @@ const store = new Vuex.Store({
     jwt: '',
     user: {},
     flash: {},
-    giphies: {},
+    giphies: [],
+    giphy: {},
   },
   actions: {
     login(context, user) {
@@ -56,10 +57,24 @@ const store = new Vuex.Store({
         offset: context.state.offset,
         limit: context.state.limit,
       };
-      return allGiphySearchApi(postData)
+      return giphySearchApi(postData)
         .then((response) => {
-          context.commit('setResults', { response });
+          context.commit('setResults', response.data.data);
         });
+    },
+    setSingleGiphy(context, giphyId) {
+      context.getters.giphies.forEach((giphy) => {
+        if (giphyId === giphy.id) {
+          context.commit('setGiphy', giphy);
+        }
+      });
+    },
+    setSingleGiphyFromResults(context, giphyId) {
+      context.getters.results.forEach((giphy) => {
+        if (giphyId === giphy.id) {
+          context.commit('setGiphy', giphy);
+        }
+      });
     },
     saveUserGiphy(context, giphyId) {
       return saveUserGiphyApi(giphyId, context.state.jwt.token)
@@ -67,16 +82,31 @@ const store = new Vuex.Store({
     },
     deleteUserGiphy(context, giphyId) {
       return deleteUserGiphyApi(giphyId, context.state.jwt.token)
-        .then(context.dispatch('getUserGiphies'));
+        .then(() => {
+          const newGiphies = [];
+          context.getters.giphies.forEach((giphy) => {
+            if (giphyId !== giphy.id) {
+              newGiphies.push(giphy);
+            }
+          });
+          context.commit('setUserGiphies', newGiphies);
+          context.commit('setGiphy', {});
+        });
     },
     getUserGiphies(context) {
       return getUserGiphiesApi(context.state.jwt.token)
-        .then(response => context.commit('setUserGiphies', { response }));
+        .then((response) => {
+          const userGiphies = [];
+          response.data.forEach((giphy) => {
+            userGiphies.push(giphy.data);
+          });
+          context.commit('setUserGiphies', userGiphies);
+        });
     },
   },
   mutations: {
-    setUserGiphies(state, payload) {
-      state.giphies = payload.response.data;
+    setUserGiphies(state, giphies) {
+      state.giphies = giphies;
     },
     setFlash(state, msg) {
       state.flash = msg;
@@ -84,8 +114,8 @@ const store = new Vuex.Store({
     setQuery(state, query) {
       state.query = query;
     },
-    setResults(state, payload) {
-      state.response = payload.response;
+    setResults(state, results) {
+      state.results = results;
     },
     setOffset(state, offset) {
       state.offset = offset;
@@ -113,9 +143,12 @@ const store = new Vuex.Store({
       state.user = {};
       localStorage.token = null;
     },
+    setGiphy(state, giphy) {
+      state.giphy = giphy;
+    },
   },
   getters: {
-    response: state => state.response,
+    results: state => state.results,
     offset: state => state.offset,
     limit: state => state.limit,
     page: state => state.page,
@@ -123,6 +156,7 @@ const store = new Vuex.Store({
     jwt: state => state.jwt,
     user: state => state.user,
     giphies: state => state.giphies,
+    giphy: state => state.giphy,
     isAuthenticated: state => isValidJwt(state.jwt.token),
   },
 });

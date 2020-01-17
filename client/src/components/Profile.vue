@@ -1,12 +1,13 @@
 <template>
-  <div>
+  <div v-if="this.authenticated">
     <br />
     <p> Here are your gifs </p>
-    <div v-for="giphy in $store.getters.giphies" :key="giphy.data.id">
+    <div v-for="giphy in this.giphies" :key="giphy.id">
       <div>
-        <img :key="giphy.data.id" v-bind:src="giphy.data.images.preview_gif.url" />
-        <br />
-        <a class="button is-large is-primary" @click.stop="deleteGiphy(giphy.data.id)">Delete</a>
+        <img
+          @click.stop="viewGiphy(giphy.id)"
+          v-bind:src="giphy.images.preview_gif.url"
+        />
       </div>
     </div>
   </div>
@@ -16,11 +17,18 @@
 
 export default {
   name: 'Profile',
+  computed: {
+    authenticated() {
+      return this.$store.getters.isAuthenticated;
+    },
+    giphies() {
+      return this.$store.getters.giphies;
+    },
+  },
   methods: {
-    async deleteGiphy(giphyId) {
-      await this.$store.dispatch('deleteUserGiphy', giphyId)
-        .then(() => this.$router.push('/'));
-      await this.$root.$emit('changeView', 'profile');
+    async viewGiphy(giphyId) {
+      await this.$store.dispatch('setSingleGiphy', giphyId);
+      await this.$root.$emit('changeView', 'giphy');
     },
   },
 };

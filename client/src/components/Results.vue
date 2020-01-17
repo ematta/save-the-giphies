@@ -1,13 +1,11 @@
 <template>
   <div class="results">
-    <div v-if="results.data">
-      <div v-for="result in results.data.data" :key="result.id">
-        <div>
-          <img v-bind:src="result.images.preview_gif.url" />
-        </div>
-        <div v-if="$store.getters.isAuthenticated === true">
-          <a class="button is-large is-primary" @click.stop="save(result.id)">Save gif</a>
-        </div>
+    <div v-if="results">
+      <div v-for="result in results" :key="result.id">
+        <img
+          v-bind:src="result.images.preview_gif.url"
+          @click.stop="viewGiphy(result.id)"
+        />
       </div>
       <div class="column is-offset-one-quarter is-half">
         <nav class="pagination is-centered" role="navigation" aria-label="pagination">
@@ -27,7 +25,7 @@ export default {
   name: 'Results',
   computed: {
     results() {
-      return this.$store.getters.response;
+      return this.$store.getters.results;
     },
     page() {
       return this.$store.getters.page;
@@ -40,9 +38,6 @@ export default {
     },
   },
   methods: {
-    async save(id) {
-      await this.$store.dispatch('saveUserGiphy', id);
-    },
     async forward() {
       const newPageNumber = this.page + 1;
       await this.$store.commit('setPage', newPageNumber);
@@ -57,6 +52,10 @@ export default {
       await this.$store.commit('setPage', newPageNumber);
       await this.$store.commit('setOffset', newPageNumber * 25);
       await this.$root.$emit('updatingResults');
+    },
+    async viewGiphy(giphyId) {
+      await this.$store.dispatch('setSingleGiphyFromResults', giphyId);
+      await this.$root.$emit('changeView', 'giphy');
     },
   },
   async mounted() {

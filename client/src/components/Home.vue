@@ -11,6 +11,8 @@
             </h2>
           </div>
           <div>
+            <a class="button is-large is-primary" @click.stop="setSearch">Search </a>
+            &nbsp;&nbsp;&nbsp;
             <div v-if="$store.getters.isAuthenticated === false">
               <a class="button is-large is-primary" @click.stop="setLogin">Login</a>
               &nbsp;&nbsp;&nbsp;
@@ -18,8 +20,6 @@
             </div>
             <div v-if="$store.getters.isAuthenticated === true">
               <a class="button is-large is-primary" @click.stop="setProfile">Profile </a>
-              &nbsp;&nbsp;&nbsp;
-              <a class="button is-large is-primary" @click.stop="setSearch">Search </a>
               &nbsp;&nbsp;&nbsp;
               <a class="button is-large is-primary" @click.stop="logout">Logout </a>
             </div>
@@ -40,6 +40,9 @@
     <div v-if="$store.getters.view === 'profile'">
       <Profile />
     </div>
+    <div v-if="$store.getters.view === 'giphy'">
+      <Giphy />
+    </div>
   </div>
 </template>
 
@@ -49,6 +52,7 @@ import Results from '@/components/Results.vue';
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
 import Profile from '@/components/Profile.vue';
+import Giphy from '@/components/Giphy.vue';
 
 export default {
   name: 'Home',
@@ -58,6 +62,7 @@ export default {
     Login,
     Register,
     Profile,
+    Giphy,
   },
   async mounted() {
     await this.$root.$on('changeView', (view) => {
