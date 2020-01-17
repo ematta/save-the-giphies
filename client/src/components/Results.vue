@@ -40,27 +40,27 @@ export default {
     },
   },
   methods: {
-    save(id) {
-      this.$store.dispatch('saveUserGiphy', id);
+    async save(id) {
+      await this.$store.dispatch('saveUserGiphy', id);
     },
-    forward() {
+    async forward() {
       const newPageNumber = this.page + 1;
-      this.$store.commit('setPage', newPageNumber);
-      this.$store.commit('setOffset', newPageNumber * 25);
-      this.$root.$emit('updatingResults');
+      await this.$store.commit('setPage', newPageNumber);
+      await this.$store.commit('setOffset', newPageNumber * 25);
+      await this.$root.$emit('updatingResults');
     },
-    backwards() {
+    async backwards() {
       if (this.page === 1) {
         return;
       }
       const newPageNumber = this.page - 1;
-      this.$store.commit('setPage', newPageNumber);
-      this.$store.commit('setOffset', newPageNumber * 25);
-      this.$root.$emit('updatingResults');
+      await this.$store.commit('setPage', newPageNumber);
+      await this.$store.commit('setOffset', newPageNumber * 25);
+      await this.$root.$emit('updatingResults');
     },
   },
-  mounted() {
-    this.$root.$on('updatingResults', () => {
+  async mounted() {
+    await this.$root.$on('updatingResults', () => {
       this.$store.dispatch('retrieveGiphies');
     });
   },

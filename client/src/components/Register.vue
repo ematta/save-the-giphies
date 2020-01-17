@@ -52,10 +52,10 @@ export default {
     };
   },
   methods: {
-    register() {
-      this.$store.dispatch('registerUser', { name: this.name, email: this.email, password: this.password })
+    async register() {
+      await this.$store.dispatch('registerUser', { name: this.name, email: this.email, password: this.password })
         .then(() => this.$router.push('/'));
-      this.$root.$emit('changeView', 'login');
+      await this.$root.$emit('changeView', 'login');
     },
   },
   mounted() {

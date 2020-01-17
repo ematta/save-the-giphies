@@ -59,30 +59,30 @@ export default {
     Register,
     Profile,
   },
-  mounted() {
-    this.$root.$on('changeView', (view) => {
+  async mounted() {
+    await this.$root.$on('changeView', (view) => {
       this.$store.commit('setView', view);
     });
   },
   methods: {
-    setSearch() {
-      return this.$root.$emit('changeView', 'search');
+    async setSearch() {
+      await this.$root.$emit('changeView', 'search');
     },
-    setLogin() {
-      return this.$root.$emit('changeView', 'login');
+    async setLogin() {
+      await this.$root.$emit('changeView', 'login');
     },
-    setProfile() {
-      this.$store.dispatch('getUserGiphies')
+    async setProfile() {
+      await this.$store.dispatch('getUserGiphies')
         .then(() => {
           this.$root.$emit('changeView', 'profile');
         });
     },
-    setRegister() {
-      return this.$root.$emit('changeView', 'register');
+    async setRegister() {
+      await this.$root.$emit('changeView', 'register');
     },
-    logout() {
-      this.$store.commit('logout');
-      return this.$root.$emit('changeView', 'search');
+    async logout() {
+      await this.$store.commit('logout');
+      await this.$root.$emit('changeView', 'search');
     },
   },
 };

@@ -11,9 +11,9 @@
 export default {
   name: 'Search',
   methods: {
-    submit() {
-      this.$store.commit('setQuery', this.$refs.queryToSearch.value);
-      this.$root.$emit('updatingResults');
+    async submit() {
+      await this.$store.commit('setQuery', this.$refs.queryToSearch.value);
+      await this.$root.$emit('updatingResults');
     },
   },
 };
