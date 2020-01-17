@@ -1,12 +1,34 @@
 version: "3.7"
 services:
-    server:
-        image: python:3.8
-        working_dir: /app
-        volumes: 
-            - ./server:/app
-        command: python3 -m pip install -r requirements.txt; python3 run.py
+    db:
+        container_name: postgres
+        image: postgres
+        restart: always
+        ports:
+            - 5432:5432
         environment:
-            - GIPHY_API_KEY
-        expose: 
-            - 5000
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+            - POSTGRES_DB
+    # server:
+    #     build: 
+    #         context: server
+    #         dockerfile: Dockerfile
+    #     ports:
+    #         - 5000:5000
+    #     environment: 
+    #         - BASE_URL
+    #         - POSTGRES_URL
+    #         - POSTGRES_PORT
+    #         - POSTGRES_USER
+    #         - POSTGRES_PASSWORD
+    #         - POSTGRES_DB
+    #         - SECRET_KEY
+    # client:
+    #     build: 
+    #         context: client
+    #         dockerfile: Dockerfile
+    #     ports:
+    #         - 8080:8080
+    #     environment: 
+    #         - VUE_APP_BASE_URL

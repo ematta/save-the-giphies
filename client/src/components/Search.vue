@@ -1,25 +1,19 @@
 <template>
   <div clas="search">
     <input
-      placeholder="Enter Text Here"
-      v-model="searchRequest"
+      ref="queryToSearch"
+      placeholder="Press enter to search"
       @keyup.enter="submit"
     />
-    <!-- <button variant="info">Search</button> -->
   </div>
 </template>
 <script>
 export default {
   name: 'Search',
-  data() {
-    return {
-      searchRequest: '',
-    };
-  },
   methods: {
     submit() {
-      this.$emit('inputData', this.searchRequest);
-      this.searchRequest = '';
+      this.$store.commit('setQuery', this.$refs.queryToSearch.value);
+      this.$root.$emit('updatingResults');
     },
   },
 };

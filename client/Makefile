@@ -1,8 +1,8 @@
 SHELL = /bin/bash
+.DEFAULT_GOAL := all
 
-
-.PHONY: run
-run: fix
+.PHONY: all
+all: fix
 	@npm run serve
 
 .PHONY: fix

@@ -2,7 +2,9 @@
 Flask==1.1.1
 Flask-Cors==3.0.8
 
-# Other
-black==19.10b0
-flake8==3.7.9
-mypy==0.761
+# Database
+SQLAlchemy==1.3.12
+psycopg2==2.8.4
+
+# Security
+PyJWT==1.7.1
