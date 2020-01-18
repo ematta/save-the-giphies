@@ -1,13 +1,11 @@
 <template>
   <div class="results">
-    <div v-if="results.data">
-      <div v-for="result in results.data.data" :key="result.id">
-        <div>
-          <img v-bind:src="result.images.preview_gif.url" />
-        </div>
-        <div v-if="$store.getters.isAuthenticated === true">
-          <a class="button is-large is-primary" @click.stop="save(result.id)">Save gif</a>
-        </div>
+    <div v-if="results">
+      <div v-for="result in results" :key="result.id">
+        <img
+          v-bind:src="result.images.preview_gif.url"
+          @click.stop="viewGiphy(result.id)"
+        />
       </div>
       <div class="column is-offset-one-quarter is-half">
         <nav class="pagination is-centered" role="navigation" aria-label="pagination">
@@ -23,45 +21,40 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'Results',
-  computed: {
-    results() {
-      return this.$store.getters.response;
-    },
-    page() {
-      return this.$store.getters.page;
-    },
-    offset() {
-      return this.$store.getters.offset;
-    },
-    limit() {
-      return this.$store.getters.limit;
-    },
-  },
+  computed: mapState([
+    'results',
+    'page',
+    'offset',
+    'limit',
+  ]),
   methods: {
-    save(id) {
-      this.$store.dispatch('saveUserGiphy', id);
-    },
-    forward() {
+    async forward() {
       const newPageNumber = this.page + 1;
-      this.$store.commit('setPage', newPageNumber);
-      this.$store.commit('setOffset', newPageNumber * 25);
-      this.$root.$emit('updatingResults');
+      await this.$store.commit('setPage', newPageNumber);
+      await this.$store.commit('setOffset', newPageNumber * 25);
+      await this.$root.$emit('updatingResults');
     },
-    backwards() {
+    async backwards() {
       if (this.page === 1) {
         return;
       }
       const newPageNumber = this.page - 1;
-      this.$store.commit('setPage', newPageNumber);
-      this.$store.commit('setOffset', newPageNumber * 25);
-      this.$root.$emit('updatingResults');
+      await this.$store.commit('setPage', newPageNumber);
+      await this.$store.commit('setOffset', newPageNumber * 25);
+      await this.$root.$emit('updatingResults');
+    },
+    async viewGiphy(giphyId) {
+      await this.$store.dispatch('setSingleGiphyFromResults', giphyId);
+      await this.$root.$emit('changeView', 'giphy');
     },
   },
-  mounted() {
-    this.$root.$on('updatingResults', () => {
-      this.$store.dispatch('retrieveGiphies');
+  async mounted() {
+    await this.$root.$on('updatingResults', () => {
+      this.$store.dispatch('giphySearch');
     });
   },
 };

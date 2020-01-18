@@ -2,8 +2,7 @@ from flask import Blueprint, jsonify, request
 from datetime import datetime, timedelta
 import jwt
 
-from save_the_giphies.database.engine import db_session
-from save_the_giphies.database.models import User
+from save_the_giphies.database.models import Users
 from save_the_giphies.config import config
 from save_the_giphies.libraries.token import token_required
 
@@ -15,19 +14,18 @@ bp = Blueprint("user", __name__, url_prefix="/user",)
 def info(user):
     return jsonify({"success": True, "user": user.to_dict()}), 201
 
+
 @bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    user = User(**data)
-    db_session.add(user)
-    db_session.commit()
+    Users.register(**data)
     return jsonify({"success": True, "message": "Registered user"}), 201
 
 
 @bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    user = User.authenticate(**data)
+    user = Users.authenticate(**data)
     if not user:
         return jsonify({"message": "Invalid credentials", "authenticated": False}), 401
     token_data = {
@@ -39,7 +37,7 @@ def login():
     response = {
         "token": token.decode("UTF-8"),
         "user": user.to_dict(),
-        "success": True, "message":
-        "Registered user"
+        "success": True,
+        "message": "Registered user",
     }
     return jsonify(response)

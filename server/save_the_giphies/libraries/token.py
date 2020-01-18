@@ -1,7 +1,7 @@
 from functools import wraps
 import jwt
 from flask import jsonify, request
-from save_the_giphies.database.models import User
+from save_the_giphies.database.models import Users
 from save_the_giphies.config import config
 
 
@@ -22,10 +22,10 @@ def token_required(f):
         try:
             token = auth_headers[1]
             data = jwt.decode(token, config.secret_key)
-            user = User.query.filter_by(email=data["sub"]).first()
+            user = Users.query.filter_by(email=data["sub"]).first()
             if not user:
                 return (
-                    jsonify({"message": "User not found.", "authenticated": False}),
+                    jsonify({"message": "Users not found.", "authenticated": False}),
                     401,
                 )
             return f(user, *args, **kwargs)
@@ -39,7 +39,7 @@ def token_required(f):
                 ),
                 401,
             )
-        except jwt.InvalidTokenError as e:
+        except jwt.InvalidTokenError:
             return (
                 jsonify(
                     {

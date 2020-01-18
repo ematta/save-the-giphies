@@ -1,4 +1,4 @@
-name: Python package
+name: Save The Giphies Server
 
 on: [push]
 
@@ -19,4 +19,4 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Pipeline check
       run: |
-        make pipeline
+        cd server; make pipeline

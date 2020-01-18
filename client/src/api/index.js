@@ -2,12 +2,42 @@ import axios from 'axios';
 
 const path = process.env.VUE_APP_BASE_URL;
 
-export function allGiphySearchApi(data) {
+export function giphySearchApi(data) {
   const url = `${path}/giphy/search`;
   return axios({
     method: 'post',
     url,
     data,
+  });
+}
+
+export function addTagToGiphyApi(payload, jwt) {
+  const url = `${path}/tags/${payload.giphyId}/${payload.tag}`;
+  const headers = { Authorization: `Bearer: ${jwt}` };
+  return axios({
+    method: 'post',
+    url,
+    headers,
+  });
+}
+
+export function getTagsToGiphyApi(giphyId, jwt) {
+  const url = `${path}/tags/${giphyId}`;
+  const headers = { Authorization: `Bearer: ${jwt}` };
+  return axios({
+    method: 'get',
+    url,
+    headers,
+  });
+}
+
+export function removeTagFromGiphyApi(payload, jwt) {
+  const url = `${path}/tags/${payload.giphyId}/${payload.tag}`;
+  const headers = { Authorization: `Bearer: ${jwt}` };
+  return axios({
+    method: 'delete',
+    url,
+    headers,
   });
 }
 

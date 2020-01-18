@@ -19,7 +19,13 @@
         <div class="field">
           <label class="label is-large" for="password">Password:</label>
           <div class="control">
-            <input type="password" class="input is-large" id="password" v-model="password">
+            <input
+              type="password"
+              class="input is-large"
+              id="password"
+              v-model="password"
+              @keyup.enter="authenticate"
+            >
           </div>
         </div>
 
@@ -45,13 +51,10 @@ export default {
     };
   },
   methods: {
-    authenticate() {
-      this.$store.dispatch('login', { email: this.email, password: this.password })
-        .then(() => {
-          this.$router.push('/');
-          this.$store.dispatch('getUserInfo');
-        });
-      this.$root.$emit('changeView', 'search');
+    async authenticate() {
+      await this.$store.dispatch('login', { email: this.email, password: this.password });
+      await this.$store.dispatch('getUserInfo');
+      await this.$root.$emit('changeView', 'search');
     },
   },
   mounted() {
