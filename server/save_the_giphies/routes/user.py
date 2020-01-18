@@ -18,16 +18,18 @@ def info(user):
 @bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    Users.register(**data)
-    return jsonify({"success": True, "message": "Registered user"}), 201
+    result = Users.register(**data)
+    status = 201 if result["success"] else 501
+    jsonify({"success": result["success"], "message": result["message"]}), 201
 
 
 @bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    user = Users.authenticate(**data)
-    if not user:
-        return jsonify({"message": "Invalid credentials", "authenticated": False}), 401
+    result = Users.authenticate(**data)
+    if not result["success"]:
+        return jsonify({"message": result["msg"], "authenticated": False}), 401
+    user = result["user"]
     token_data = {
         "sub": user.email,
         "iat": datetime.utcnow(),

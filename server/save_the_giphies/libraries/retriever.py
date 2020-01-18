@@ -5,6 +5,8 @@ from typing import Dict
 
 
 class Retriever:
+    """ Main API interface for GIPHY """
+
     def url(self, endpoint: "str") -> "str":
         host: "str" = "/".join([config.giphy_host, config.giphy_version, endpoint])
         return f"{config.giphy_schema}://{host}"

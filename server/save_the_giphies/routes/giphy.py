@@ -29,15 +29,20 @@ def get_user_giphies(user):
 @bp.route("/user/<giphy>", methods=["DELETE"])
 @token_required
 def delete_user_giphy(user, giphy):
-    Giphies.delete_giphy(users_id=user.id, giphy=giphy)
-    return jsonify({"success": True}), 204
+    results = Giphies.delete_giphy(users_id=user.id, giphy=giphy)
+    status = 201 if result["success"] else 404
+    return jsonify({"success": results}), 204
 
 
 @bp.route("/user/<giphy>", methods=["POST"])
 @token_required
 def save_user_giphy(user, giphy):
-    try:
-        Giphies.save_giphy(users_id=user.id, giphy=giphy)
-        return jsonify({"success": True, "message": "Saved giphy"}), 201
-    except Exception:
-        return jsonify({"success": False, "message": "Already in your profile"}), 405
+    results = Giphies.save_giphy(users_id=user.id, giphy=giphy)
+    status = 201 if result["success"] else 405
+    return jsonify({"success": results, "message": "Saved giphy"}), 201
+    return (
+        jsonify(
+            {"success": False, "message": results["msg"], "giphy": results["giphy"]}
+        ),
+        status,
+    )

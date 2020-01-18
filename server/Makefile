@@ -7,11 +7,22 @@ all: install
 	DEBUG=True python app.py
 
 .PHONY: check-code
-check-code: 
+check-code: mypy black flake8
+
+.PHONY: mypy
+mypy:
 	@. .venv/bin/activate; \
-	mypy save_the_giphies; \
+	mypy save_the_giphies;
+
+.PHONY: black
+black:
+	@. .venv/bin/activate; \
 	black save_the_giphies --exclude .venv; \
-	flake8 save_the_giphies --exclude .venv
+
+.PHONY: flake8
+flake8:
+	@. .venv/bin/activate; \
+	flake8 save_the_giphies --exclude .venv;
 
 .PHONY: check-tests
 check-tests: 
