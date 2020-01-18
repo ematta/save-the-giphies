@@ -54,3 +54,13 @@ unit-test:
 
 .PHONY: tests
 tests: check-tests unit-test integration-test functional-test
+
+.PHONY: pipeline
+pipeline: 
+	pip install --upgrade pip \
+	&& pip install -r pipeline-requirements.txt -r dev-requirements.txt \
+	&& mypy save_the_giphies \
+	&& black save_the_giphies --exclude .venv \
+	&& flake8 save_the_giphies --exclude .venv \
+	&& python -m unittest discover tests/integration -v \
+	&& python -m unittest discover tests/unit -v

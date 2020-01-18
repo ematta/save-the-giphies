@@ -8,3 +8,8 @@ all: fix
 .PHONY: fix
 fix:
 	@npm run lint -- --fix
+
+.PHONY: pipeline
+pipeline:
+	@npm run lint \
+	&& npm run build;

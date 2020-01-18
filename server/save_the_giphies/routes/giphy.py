@@ -2,10 +2,9 @@ from flask import Blueprint, jsonify, request
 from save_the_giphies.database.models import Giphies
 from save_the_giphies.libraries.retriever import retriever
 from save_the_giphies.libraries.token import token_required
-from typing import TYPE_CHECKING, Tuple, List
+from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
-    from save_the_giphies.database.models import Users
     from flask.wrappers import Response
 
 bp = Blueprint("giphy", __name__, url_prefix="/giphy",)

@@ -1,11 +1,7 @@
 from urllib.request import urlopen
 from save_the_giphies.config import config
 import json
-from typing import TYPE_CHECKING, List, Dict
-
-if TYPE_CHECKING:
-    from save_the_giphies.database.models import Users
-    from flask.wrappers import Response
+from typing import Dict
 
 
 class Retriever:
