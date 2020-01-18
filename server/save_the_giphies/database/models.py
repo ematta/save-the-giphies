@@ -15,6 +15,9 @@ class Users(Base):
         self.email: str = email
         self.password: str = generate_password_hash(password, method="sha256")
 
+    def to_dict(self):
+        return dict(id=self.id, email=self.email, name=self.name)
+
     @classmethod
     def authenticate(cls, email: str, password: str):
         if not email or not password:
@@ -29,9 +32,6 @@ class Users(Base):
         user = Users(email=email, password=password, name=name)
         db_session.add(user)
         return db_session.commit()
-
-    def to_dict(self):
-        return dict(id=self.id, email=self.email, name=self.name)
 
 
 class Giphies(Base):
@@ -48,6 +48,9 @@ class Giphies(Base):
     def __init__(self, users_id: int, giphy: str):
         self.users_id: int = users_id
         self.giphy: str = giphy
+
+    def to_dict(self):
+        return dict(id=self.id, users_id=self.users_id, giphy=self.giphy)
 
     @classmethod
     def all_giphies(cls, users_id: int):
@@ -69,9 +72,6 @@ class Giphies(Base):
         db_session.add(giphy)
         return db_session.commit()
 
-    def to_dict(self):
-        return dict(id=self.id, users_id=self.users_id, giphy=self.giphy)
-
 
 class Tags(Base):
     __tablename__ = "tags"
@@ -84,13 +84,20 @@ class Tags(Base):
     )
     tag = Column(String(50), nullable=False)
 
+    def __init__(self, tag: str, giphies_id: int):
+        self.tag: str = tag
+        self.giphies_id: id = giphies_id
+
+    def to_dict(self):
+        return dict(id=self.id, giphies_id=self.giphies_id, tag=self.tag)
+
     @classmethod
     def all_tags(cls, giphies_id: int):
         return cls.query.filter_by(giphies_id=giphies_id).all()
 
     @classmethod
-    def delete_tag(cls, giphies_id: int, tag: str):
-        found_tag = cls.query.filter_by(giphies_id=giphies_id, tag=tag).first()
+    def delete_tag(cls, giphies_id: int, tag_id: int):
+        found_tag = cls.query.filter_by(giphies_id=giphies_id, id=tag_id).first()
         db_session.delete(found_tag)
         return db_session.commit()
 
@@ -99,7 +106,3 @@ class Tags(Base):
         new_tag = Tags(**{"giphies_id": giphies_id, "tag": tag})
         db_session.add(new_tag)
         return db_session.commit()
-
-    def __init__(self, tag: str, giphies_id: int):
-        self.tag: str = tag
-        self.giphies_id: id = giphies_id

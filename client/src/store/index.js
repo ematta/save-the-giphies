@@ -12,6 +12,7 @@ import {
   deleteUserGiphyApi,
   addTagToGiphyApi,
   getTagsToGiphyApi,
+  removeTagFromGiphyApi,
 } from '@/api';
 import { isValidJwt, EventBus } from '@/utility';
 
@@ -109,7 +110,9 @@ const store = new Vuex.Store({
     },
     addTagToGiphy(context, payload) {
       return addTagToGiphyApi(payload, context.state.jwt)
-        .then(context.dispatch('getTagsToGiphy', payload.giphyId), payload)
+        .then(() => {
+          context.dispatch('getTagsToGiphy', payload.giphyId);
+        })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
         });
@@ -118,6 +121,15 @@ const store = new Vuex.Store({
       return getTagsToGiphyApi(giphyId, context.getters.jwt)
         .then((response) => {
           context.commit('setTags', response.data);
+        })
+        .catch((error) => {
+          EventBus.$emit('errorMessage', error);
+        });
+    },
+    removeTagFromGiphy(context, payload) {
+      return removeTagFromGiphyApi(payload, context.getters.jwt)
+        .then(() => {
+          context.dispatch('getTagsToGiphy', payload.giphyId);
         })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
@@ -148,7 +160,7 @@ const store = new Vuex.Store({
       state.errorMessage = errorMessage;
     },
     setTags(state, payload) {
-      state.tags.push(payload);
+      state.tags = payload;
     },
     deleteTags(state, payload) {
       const newTags = [];

@@ -1,26 +1,31 @@
 from urllib.request import urlopen
 from save_the_giphies.config import config
 import json
+from typing import TYPE_CHECKING, List, Dict
+
+if TYPE_CHECKING:
+    from save_the_giphies.database.models import Users
+    from flask.wrappers import Response
 
 
 class Retriever:
-    def url(self, endpoint):
-        host = "/".join([config.giphy_host, config.giphy_version, endpoint])
+    def url(self, endpoint: "str") -> "str":
+        host: "str" = "/".join([config.giphy_host, config.giphy_version, endpoint])
         return f"{config.giphy_schema}://{host}"
 
-    def retrieve_giphy(self, giphy_id: str):
+    def retrieve_giphy(self, giphy_id: "str") -> "Dict":
         """Returns the response from Giphy for a single gif
         Parameters:
             giphy_id (str): The giphy id we are dealing with
 
         Returns:
-            Dict: The json payload from giphy
+            List[Dict]: The json payload from giphy
         """
-        url = self.url(config.giphy_gifs_endpoint)
-        host = f"{url}/{giphy_id}?api_key={config.giphy_api_key}"
+        url: "str" = self.url(config.giphy_gifs_endpoint)
+        host: "str" = f"{url}/{giphy_id}?api_key={config.giphy_api_key}"
         res = urlopen(host)
-        body = res.read()
-        payload = json.loads(body.decode("utf-8"))
+        body: "bytes" = res.read()
+        payload: "Dict" = json.loads(body.decode("utf-8"))
         return payload
 
     def retrieve_giphies(
@@ -41,7 +46,7 @@ class Retriever:
             lang (str): The language you want to see for giphs (default: en)
 
         Returns:
-            Dict: The json payload from giphy
+            List: The json payload from giphy
         """
         url = self.url(config.giphy_search_endpoint)
         query = "&".join(

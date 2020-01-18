@@ -17,10 +17,10 @@
         />
       </div>
       <div v-if="tags.length > 0" :key="tags.legnth">
-        Tags set for this giphy:
+        Tags set for this giphy (click to remove):
         <br />
         <div v-for="tag in tags" :key="tag.id">
-          {{ tag }}
+          <a @click.stop="removeTag(tag.id)"> {{ tag.tag }} </a>
         </div>
       </div>
     </div>
@@ -51,6 +51,7 @@ export default {
           }
         });
       });
+      this.getTags();
     }
   },
   methods: {
@@ -80,6 +81,12 @@ export default {
     },
     async getTags() {
       await this.$store.dispatch('getTagsToGiphy', this.giphy.id)
+        .then(() => {
+          this.$root.$emit('changeView', 'giphy');
+        });
+    },
+    async removeTag(tagId) {
+      await this.$store.dispatch('removeTagFromGiphy', { giphyId: this.giphy.id, tag: tagId })
         .then(() => {
           this.$root.$emit('changeView', 'giphy');
         });

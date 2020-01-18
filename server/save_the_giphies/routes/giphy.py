@@ -2,14 +2,19 @@ from flask import Blueprint, jsonify, request
 from save_the_giphies.database.models import Giphies
 from save_the_giphies.libraries.retriever import retriever
 from save_the_giphies.libraries.token import token_required
+from typing import TYPE_CHECKING, Tuple, List
+
+if TYPE_CHECKING:
+    from save_the_giphies.database.models import Users
+    from flask.wrappers import Response
 
 bp = Blueprint("giphy", __name__, url_prefix="/giphy",)
 
 
 @bp.route("/search", methods=["POST"])
-def search_all_giphies():
+def search_all_giphies() -> "Tuple[Response, int]":
     response = retriever.retrieve_giphies(**request.get_json())
-    return jsonify(response)
+    return jsonify(response), 200
 
 
 @bp.route("/user", methods=["GET"])

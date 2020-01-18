@@ -31,6 +31,16 @@ export function getTagsToGiphyApi(giphyId, jwt) {
   });
 }
 
+export function removeTagFromGiphyApi(payload, jwt) {
+  const url = `${path}/tags/${payload.giphyId}/${payload.tag}`;
+  const headers = { Authorization: `Bearer: ${jwt}` };
+  return axios({
+    method: 'delete',
+    url,
+    headers,
+  });
+}
+
 export function saveUserGiphyApi(giphyId, jwt) {
   const url = `${path}/giphy/user/${giphyId}`;
   const headers = { Authorization: `Bearer: ${jwt}` };
