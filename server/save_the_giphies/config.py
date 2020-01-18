@@ -5,6 +5,8 @@ import os
 
 @dataclass
 class Config:
+    """ Configuration class """
+
     giphy_schema: str = "https"
     giphy_host: str = "api.giphy.com"
     giphy_version: str = os.getenv("GIPHY_API_VERSION", "v1")
@@ -20,4 +22,5 @@ class Config:
     secret_key: str = os.environ["SECRET_KEY"]
 
 
+""" Single object of config needed """
 config = Config()

@@ -22,7 +22,7 @@ black:
 .PHONY: flake8
 flake8:
 	@. .venv/bin/activate; \
-	flake8 save_the_giphies --exclude .venv;
+	flake8 save_the_giphies --exclude .venv -v;
 
 .PHONY: check-tests
 check-tests: 
@@ -54,14 +54,19 @@ functional-test:
 	python -m unittest discover tests/functional -v
 
 .PHONY: integration-test
-integration-test:
+integration-test: report
 	@. .venv/bin/activate; \
-	python -m unittest discover tests/integration -v
+	coverage run -m unittest discover tests/integration -v
 
 .PHONY: unit-test
-unit-test:
+unit-test: report
 	@. .venv/bin/activate; \
-	python -m unittest discover tests/unit -v
+	coverage run -m unittest discover tests/unit -v
+
+.PHONY: report
+report:
+	@. .venv/bin/activate; \
+	coverage html
 
 .PHONY: tests
 tests: check-tests unit-test integration-test functional-test

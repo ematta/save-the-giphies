@@ -8,3 +8,4 @@ sqlalchemy-stubs==0.3
 # Other
 black==19.10b0
 flake8==3.7.9
+coverage==5.0.3

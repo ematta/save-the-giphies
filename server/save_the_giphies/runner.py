@@ -8,7 +8,8 @@ from save_the_giphies.config import config
 
 
 def create_app():
-    app = Flask(__name__)
+    """ Creates the flask app """
+    app: "Flask" = Flask(__name__)
     app.config["SECRET_KEY"] = config.secret_key
     CORS(app, resources={r"/*": {"origins": "*"}})
     app.register_blueprint(giphy.bp)
@@ -17,10 +18,12 @@ def create_app():
 
     @app.errorhandler(404)
     def not_found(error):
-        return {"message": "Not here homie!"}
+        """ 404 route """
+        return {"message": f"Not found: {error}"}
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
+        """ When we shit down, kill the DB Session """
         db_session.remove()
 
     return app

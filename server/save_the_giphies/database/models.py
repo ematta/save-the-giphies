@@ -3,7 +3,7 @@ from save_the_giphies.database.engine import Base, db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 from save_the_giphies.libraries.logger import logger
 
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import Dict, List, Tuple
 
 
 class Users(Base):
@@ -39,14 +39,14 @@ class Users(Base):
         """
         if not email or not password:
             logger.warn(f"No email or password set: email {email}, password {password}")
-            return {"success": False, msg: "No email or password set"}
+            return {"success": False, "msg": "No email or password set"}
         user: "Users" = cls.query.filter_by(email=email).first()
         if not user:
             logger.warn(f"User not found")
-            return {"success": False, msg: "User not found"}
+            return {"success": False, "msg": "User not found"}
         if not check_password_hash(user.password, password):
             logger.warn(f"Password incorrect")
-            return {"success": False, msg: "Password incorrect"}
+            return {"success": False, "msg": "Password incorrect"}
         return {"success": True, "msg": "User authenticated", "user": user}
 
     @classmethod
@@ -164,7 +164,7 @@ class Giphies(Base):
         except Exception as e:
             return {
                 "success": False,
-                "msg": f"Could not save {giphy} for {user_id}: {e}",
+                "msg": f"Could not save {giphy} for {users_id}: {e}",
             }
 
 
@@ -191,7 +191,7 @@ class Tags(Base):
         """ Converts model to dict """
         result = dict(id=self.id, giphies_id=self.giphies_id, tag=self.tag)
         logger.info(f"Giphy Dict {result}")
-        return results
+        return result
 
     @classmethod
     def all_tags(cls, giphies_id: "int") -> "List[Tags]":
@@ -240,11 +240,10 @@ class Tags(Base):
             logger.info("Saved giphy")
             return {
                 "success": True,
-                "msg": f"Saved tag {tag} for giphy id {giphy_id}",
-                "tag": new_tag,
+                "msg": f"Saved tag {tag} for giphy id {giphies_id}",
             }
         except Exception as e:
             return {
                 "success": False,
-                "msg": f"Could not save {tag} for {giphy_id}: {e}",
+                "msg": f"Could not save {tag} for {giphies_id}: {e}",
             }
