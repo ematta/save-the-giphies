@@ -14,8 +14,8 @@ class TestRetriever(unittest.TestCase):
     def test_retrieve_giphies(self, mock_urlopen):
         mm = MagicMock()
         mm.getcode.return_value = 200
-        mm.read.return_value = b'{"foo": "bar"}'
+        mm.read.return_value = b'{"data": [{"rating": "g"}]}'
         mm.__enter__.return_value = mm
         mock_urlopen.return_value = mm
-        payload = Retriever().retrieve_giphies("foo")
-        self.assertTrue(payload == {"foo": "bar"})
+        payload = Retriever().retrieve_giphies("foo", limit=1)
+        self.assertTrue(payload == [{"rating": "g"}])

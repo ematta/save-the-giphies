@@ -51,7 +51,7 @@ const store = new Vuex.Store({
           EventBus.$emit('failedRegistering: ', error);
         });
     },
-    retrieveGiphies(context) {
+    giphySearch(context) {
       const postData = {
         q: context.state.query,
         offset: context.state.offset,
@@ -59,7 +59,7 @@ const store = new Vuex.Store({
       };
       return giphySearchApi(postData)
         .then((response) => {
-          context.commit('setResults', response.data.data);
+          context.commit('setResults', response.data);
         });
     },
     setSingleGiphy(context, giphyId) {

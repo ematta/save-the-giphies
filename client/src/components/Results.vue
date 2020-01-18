@@ -60,7 +60,7 @@ export default {
   },
   async mounted() {
     await this.$root.$on('updatingResults', () => {
-      this.$store.dispatch('retrieveGiphies');
+      this.$store.dispatch('giphySearch');
     });
   },
 };

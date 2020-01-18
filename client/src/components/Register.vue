@@ -53,8 +53,7 @@ export default {
   },
   methods: {
     async register() {
-      await this.$store.dispatch('registerUser', { name: this.name, email: this.email, password: this.password })
-        .then(() => this.$router.push('/'));
+      await this.$store.dispatch('registerUser', { name: this.name, email: this.email, password: this.password });
       await this.$root.$emit('changeView', 'login');
     },
   },

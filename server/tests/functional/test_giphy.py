@@ -19,7 +19,7 @@ class TestGiphy(unittest.TestCase):
             follow_redirects=True,
         )
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.data.decode("utf-8"))["data"]
+        data = json.loads(response.data.decode("utf-8"))
         self.assertTrue(len(data) == 25)
         self.assertTrue(data[0]["rating"] == "g")
 
@@ -31,5 +31,5 @@ class TestGiphy(unittest.TestCase):
             follow_redirects=True,
         )
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.data.decode("utf-8"))["data"]
+        data = json.loads(response.data.decode("utf-8"))
         self.assertTrue(len(data) == 100)
