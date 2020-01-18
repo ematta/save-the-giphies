@@ -1,12 +1,11 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from save_the_giphies.database.engine import Base, db_session
 from werkzeug.security import generate_password_hash, check_password_hash
-from typing import Dict
 
 
-class User(Base):
+class Users(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True,)
     name = Column(String(120))
     email = Column(String(120), unique=True, nullable=False)
     password = Column(String(120), nullable=False)
@@ -27,73 +26,80 @@ class User(Base):
 
     @classmethod
     def register(cls, email: str, name: str, password):
-        user = User(email=email, password=password, name=name)
+        user = Users(email=email, password=password, name=name)
         db_session.add(user)
         return db_session.commit()
 
     def to_dict(self):
         return dict(id=self.id, email=self.email, name=self.name)
 
-class Giphy(Base):
+
+class Giphies(Base):
     __tablename__ = "giphies"
-    __table_args__ = (UniqueConstraint("user_id", "giphy", name="_user_giphy_uc_"),)
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    __table_args__ = (UniqueConstraint("users_id", "giphy", name="_user_giphy_uc_"),)
+    id = Column(Integer, primary_key=True, autoincrement=True,)
+    users_id = Column(
+        Integer,
+        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     giphy = Column(String, nullable=False)
 
-    def __init__(self, user_id: int, giphy: str):
-        self.user_id: int = user_id
+    def __init__(self, users_id: int, giphy: str):
+        self.users_id: int = users_id
         self.giphy: str = giphy
 
     @classmethod
-    def all_giphies(cls, user_id: int):
-        return cls.query.filter_by(user_id=user_id).all()
+    def all_giphies(cls, users_id: int):
+        return cls.query.filter_by(users_id=users_id).all()
 
     @classmethod
-    def delete_giphy(cls, user_id: int, giphy: str):
-        giphy = cls.query.filter_by(user_id=user_id, giphy=giphy).first()
+    def delete_giphy(cls, users_id: int, giphy: str):
+        giphy = cls.query.filter_by(users_id=users_id, giphy=giphy).first()
         db_session.delete(giphy)
         return db_session.commit()
 
     @classmethod
-    def first_giphy(cls, user_id: int, giphy: str):
-        return cls.query.filter_by(user_id=user_id, giphy=giphy).first()
+    def first_giphy(cls, users_id: int, giphy: str):
+        return cls.query.filter_by(users_id=users_id, giphy=giphy).first()
 
     @classmethod
-    def save_giphy(cls, user_id: int, giphy: str):
-        giphy = Giphy(user_id=user_id, giphy=giphy)
+    def save_giphy(cls, users_id: int, giphy: str):
+        giphy = Giphies(users_id=users_id, giphy=giphy)
         db_session.add(giphy)
         return db_session.commit()
 
     def to_dict(self):
-        return dict(id=self.id, user_id=self.user_id, giphy=self.giphy)
+        return dict(id=self.id, users_id=self.users_id, giphy=self.giphy)
 
 
-
-
-class Tag(Base):
+class Tags(Base):
     __tablename__ = "tags"
-    __table_args__ = (UniqueConstraint("giphy_id", "tag", name="_tag_giphy_uc_"),)
+    __table_args__ = (UniqueConstraint("giphies_id", "tag", name="_tag_giphy_uc_"),)
     id = Column(Integer, primary_key=True)
-    giphy_id = Column(Integer, ForeignKey("giphies.id"), nullable=False)
-    tag = Column(String(50), unique=True, nullable=False)
+    giphies_id = Column(
+        Integer,
+        ForeignKey("giphies.id", onupdate="CASCADE", ondelete="CASCADE"),
+        autoincrement=True,
+    )
+    tag = Column(String(50), nullable=False)
 
     @classmethod
-    def all_tags(cls, giphy_id: int):
-        return cls.query.filter_by(giphy_id=giphy_id).all()
+    def all_tags(cls, giphies_id: int):
+        return cls.query.filter_by(giphies_id=giphies_id).all()
 
     @classmethod
-    def delete_tag(cls, giphy_id: int, tag: str):
-        found_tag = cls.query.filter_by(giphy_id=giphy_id, tag=tag).first()
+    def delete_tag(cls, giphies_id: int, tag: str):
+        found_tag = cls.query.filter_by(giphies_id=giphies_id, tag=tag).first()
         db_session.delete(found_tag)
         return db_session.commit()
 
     @classmethod
-    def save_tag(cls, giphy_id: int, tag: str):
-        new_tag = Tag(**{"giphy_id": giphy_id, "tag": tag})
+    def save_tag(cls, giphies_id: int, tag: str):
+        new_tag = Tags(**{"giphies_id": giphies_id, "tag": tag})
         db_session.add(new_tag)
         return db_session.commit()
 
-    def __init__(self, tag: str, giphy_id: int):
+    def __init__(self, tag: str, giphies_id: int):
         self.tag: str = tag
-        self.giphy_id: id = giphy_id
+        self.giphies_id: id = giphies_id

@@ -1,36 +1,33 @@
-from flask import Blueprint, jsonify, request
-from save_the_giphies.database.models import Giphy
-from save_the_giphies.libraries.retriever import retriever
+from flask import Blueprint, jsonify
+from save_the_giphies.database.models import Giphies, Tags
 from save_the_giphies.libraries.token import token_required
-from save_the_giphies.database.engine import db_session
 
 bp = Blueprint("tag", __name__, url_prefix="/tags",)
 
 
-@bp.route("/<giphy>/<tag>", methods=["POST"])
+@bp.route("/<giphies_id>/<tag>", methods=["POST"])
 @token_required
-def save_tag(user, giphy, tag):
+def save_tag(user, giphies_id, tag):
     try:
-        giphy = Giphy.get_user_giphy(user_id=user.id, giphy=giphy)
-        new_tag = Tag.save_tag(**{"giphy_id": giphy.id, "tag": tag})
+        giphy = Giphies.first_giphy(users_id=user.id, giphy=giphies_id)
+        Tags.save_tag(**{"giphies_id": giphy.id, "tag": tag})
         return jsonify({"success": True, "message": "Saved tag"}), 201
-    except Exception as ex:
-        return jsonify({"success": False, "message": "Tag already associated"}), 405
+    except Exception:
+        return jsonify({"success": False, "message": "Tags already associated"}), 405
 
 
-@bp.route("/<giphy>/<tag>", methods=["DELETE"])
+@bp.route("/<giphies_id>/<tag>", methods=["DELETE"])
 @token_required
-def delete_giphy_tag(user, giphy, tag):
-    giphy = Giphy.get_user_giphy(user_id=user.id, giphy=giphy)
-    Tag.delete_tag(giphy_id=giphy.id, tag=tag)
+def delete_giphy_tag(user, giphies_id, tag):
+    giphy = Giphies.first_giphy(users_id=user.id, giphy=giphies_id)
+    Tags.delete_tag(giphies_id=giphy.id, tag=tag)
     return jsonify({"success": True}), 204
 
-@bp.route("/<giphy>", methods=["GET"])
+
+@bp.route("/<giphies_id>", methods=["GET"])
 @token_required
-def get_user_giphies(user, giphy):
-    giphy = Giphy.get_user_giphy(user_id=user.id, giphy=giphy)
-    all_tags = Tag.all_tags(giphy_id=giphy.id)
-    tags = [
-        tag.tag for tag in all_tags
-    ]
+def get_giphy_tags(user, giphies_id):
+    giphy = Giphies.first_giphy(users_id=user.id, giphy=giphies_id)
+    all_tags = Tags.all_tags(giphies_id=giphy.id)
+    tags = [tag.tag for tag in all_tags]
     return jsonify(tags)

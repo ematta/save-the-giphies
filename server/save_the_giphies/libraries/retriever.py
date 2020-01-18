@@ -58,16 +58,12 @@ class Retriever:
         res = urlopen(url)
         body = res.read()
         payload = json.loads(body.decode("utf-8"))
-        results = [load for load in payload['data'] if load['rating'].lower() == 'g']
+        results = [load for load in payload["data"] if load["rating"].lower() == "g"]
         if len(results) < limit:
             new_limit = limit - len(results)
             new_offset = offset + new_limit
             new_results = self.retrieve_giphies(
-                q=q,
-                limit=new_limit,
-                offset=offset,
-                rating=rating,
-                lang=lang
+                q=q, limit=new_limit, offset=new_offset, rating=rating, lang=lang
             )
             results = results + new_results
         return results
