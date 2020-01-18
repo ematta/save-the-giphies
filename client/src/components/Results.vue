@@ -21,22 +21,16 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'Results',
-  computed: {
-    results() {
-      return this.$store.getters.results;
-    },
-    page() {
-      return this.$store.getters.page;
-    },
-    offset() {
-      return this.$store.getters.offset;
-    },
-    limit() {
-      return this.$store.getters.limit;
-    },
-  },
+  computed: mapState([
+    'results',
+    'page',
+    'offset',
+    'limit',
+  ]),
   methods: {
     async forward() {
       const newPageNumber = this.page + 1;

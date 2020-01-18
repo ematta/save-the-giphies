@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p class="subtitle error-msg" @click.stop="clearMessage">{{ errorMessage }}</p>
     <div>
       <!-- <h1> {{ $log(HOW TO GET LOGGER) }} </h1> -->
       <section class="hero is-primary">
@@ -27,32 +28,34 @@
         </div>
       </section>
     </div>
-    <div v-if="$store.getters.view === 'search'">
-      <Search />
-      <Results />
+    <div v-if="giphy()">
+      <Giphy />
     </div>
-    <div v-if="$store.getters.view === 'login'">
+    <div v-else-if="login()">
       <Login />
     </div>
-    <div v-if="$store.getters.view === 'register'">
+    <div v-else-if="register()">
       <Register />
     </div>
-    <div v-if="$store.getters.view === 'profile'">
+    <div v-else-if="profile()">
       <Profile />
     </div>
-    <div v-if="$store.getters.view === 'giphy'">
-      <Giphy />
+    <div v-else>
+      <Search />
+      <Results />
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Search from '@/components/Search.vue';
 import Results from '@/components/Results.vue';
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
 import Profile from '@/components/Profile.vue';
 import Giphy from '@/components/Giphy.vue';
+import { EventBus } from '@/utility';
 
 export default {
   name: 'Home',
@@ -64,12 +67,28 @@ export default {
     Profile,
     Giphy,
   },
-  async mounted() {
-    await this.$root.$on('changeView', (view) => {
+  computed: mapState(['view', 'errorMessage']),
+  data() {
+    return {
+      search: () => this.view === 'search',
+      login: () => this.view === 'login',
+      register: () => this.view === 'register',
+      profile: () => this.view === 'profile',
+      giphy: () => this.view === 'giphy',
+    };
+  },
+  mounted() {
+    this.$root.$on('changeView', (view) => {
       this.$store.commit('setView', view);
+    });
+    EventBus.$on('errorMessage', (msg) => {
+      this.$store.commit('setErrorMessage', msg);
     });
   },
   methods: {
+    async clearMessage() {
+      this.$store.commit('setErrorMessage', '');
+    },
     async setSearch() {
       await this.$root.$emit('changeView', 'search');
     },
@@ -89,6 +108,9 @@ export default {
       await this.$store.commit('logout');
       await this.$root.$emit('changeView', 'search');
     },
+  },
+  beforeDestroy() {
+    EventBus.$off('errorMessage');
   },
 };
 </script>
