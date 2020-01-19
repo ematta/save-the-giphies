@@ -10,25 +10,41 @@ services:
             - POSTGRES_USER
             - POSTGRES_PASSWORD
             - POSTGRES_DB
-    # server:
-    #     build: 
-    #         context: server
-    #         dockerfile: Dockerfile
-    #     ports:
-    #         - 5000:5000
-    #     environment: 
-    #         - BASE_URL
-    #         - POSTGRES_URL
-    #         - POSTGRES_PORT
-    #         - POSTGRES_USER
-    #         - POSTGRES_PASSWORD
-    #         - POSTGRES_DB
-    #         - SECRET_KEY
-    # client:
-    #     build: 
-    #         context: client
-    #         dockerfile: Dockerfile
-    #     ports:
-    #         - 8080:8080
-    #     environment: 
-    #         - VUE_APP_BASE_URL
+
+    api:
+        build:
+            context: server
+            dockerfile: Dockerfile
+        container_name: api
+        environment: 
+            - BASE_URL
+            - POSTGRES_URL
+            - POSTGRES_PORT
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+            - POSTGRES_DB
+            - SECRET_KEY
+        restart: always
+        volumes:
+            - ./server/:/app
+        expose:
+            - 9000
+
+    ui:
+        build:
+            context: client
+            dockerfile: Dockerfile
+        container_name: ui
+        restart: always
+        expose:
+            - 80
+
+    nginx:
+        build: 
+            context: nginx
+            dockerfile: Dockerfile
+        container_name: nginx
+        restart: always
+        ports:
+            - "8000:8000"
+            - "8001:80"

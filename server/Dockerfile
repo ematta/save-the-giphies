@@ -1,17 +1,7 @@
-FROM ubuntu:18.10
-
+FROM python:3.8
 LABEL maintainer="Enrique Matta <enrique@matta.dev>"
-
-RUN apt-get update
-RUN apt-get install -y python3 python3-dev python3-pip nginx libpq-dev
-RUN pip3 install uwsgi
-
-COPY ./ /app
-
 WORKDIR /app
-
-RUN pip3 install -r requirements.txt
-
-COPY ./nginx.conf /etc/nginx/sites-enabled/default
-
-CMD service nginx start && uwsgi -s /tmp/uwsgi.sock --chmod-socket=666 --manage-script-name --mount /=app:app
+ADD . /app
+RUN pip install -r requirements.txt
+RUN pip install uwsgi
+CMD [ "uwsgi", "app.ini" ]

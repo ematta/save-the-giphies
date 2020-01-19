@@ -1,0 +1,7 @@
+How we address OWASP 9 based on [the top 10](https://owasp.org/www-project-top-ten/) document
+
+### Injection
+- All calls are going through SQL Alchemy, which handles injection attacks
+
+### Broken Authentication
+- JWT handles session
