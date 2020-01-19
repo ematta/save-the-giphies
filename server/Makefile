@@ -90,5 +90,5 @@ packages:
 static:
 	# Skipping B310 because this is an external call and complains
 	# about the schema not being there (in config)
-	@. .venv/bin.activate; \
+	@. .venv/bin/activate; \
 	bandit -r -s B310 save_the_giphies

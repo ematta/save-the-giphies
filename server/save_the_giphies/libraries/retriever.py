@@ -30,7 +30,7 @@ class Retriever:
 
         Returns Dict
         """
-        giphy_id = giphy_id.strip().replace(' ', '%20')
+        giphy_id = giphy_id.strip().replace(" ", "%20")
         url: "str" = self.url(config.giphy_gifs_endpoint)
         host: "str" = f"{url}/{giphy_id}?api_key={config.giphy_api_key}"
         res: "HTTPResponse" = urlopen(host)
@@ -58,7 +58,7 @@ class Retriever:
         Returns List[Dict]
         """
         url: "str" = self.url(config.giphy_search_endpoint)
-        q = q.strip().replace(' ', '%20')
+        q = q.strip().replace(" ", "%20")
         query: "str" = "&".join(
             [
                 f"api_key={config.giphy_api_key}",
