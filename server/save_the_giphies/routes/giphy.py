@@ -24,6 +24,10 @@ def search_all_giphies() -> "Tuple[Response, int]":
 
 @bp.route("/user", methods=["GET"])
 @token_required
+def get_user_giphies_call(user: "Users") -> "Tuple[Response, int]":
+    return get_user_giphies(user)
+
+
 def get_user_giphies(user: "Users") -> "Tuple[Response, int]":
     """ Retrieves giphies associated with Account
     Params:
@@ -65,4 +69,4 @@ def save_user_giphy(user: "Users", giphy: "str") -> "Tuple[Response, int]":
     """
     results: "Dict" = Giphies.save_giphy(users_id=user.id, giphy=giphy)
     status: "int" = 201 if results["success"] else 405
-    return jsonify({"success": results["success"], "message": results["msg"]}), status
+    return jsonify({"success": results["success"], "msg": results["msg"]}), status

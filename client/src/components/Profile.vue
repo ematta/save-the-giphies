@@ -15,6 +15,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import { EventBus } from '@/utility';
 
 export default {
   name: 'Profile',
@@ -22,7 +23,7 @@ export default {
   methods: {
     async viewGiphy(giphyId) {
       await this.$store.dispatch('setSingleGiphy', giphyId);
-      await this.$root.$emit('changeView', 'giphy');
+      await EventBus.$emit('changeView', 'giphy');
     },
   },
 };

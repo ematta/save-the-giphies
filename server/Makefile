@@ -7,7 +7,7 @@ all: install
 	DEBUG=True python app.py
 
 .PHONY: check-code
-check-code: mypy black flake8
+check-code: install mypy black flake8 static packages
 
 .PHONY: mypy
 mypy:
@@ -79,4 +79,16 @@ pipeline:
 	&& black save_the_giphies --exclude .venv \
 	&& flake8 save_the_giphies --exclude .venv \
 	&& python -m unittest discover tests/integration -v \
-	&& python -m unittest discover tests/unit -v
+	&& python -m unittest discover tests/unit -v;
+
+.PHONY: packages
+packages:
+	@. .venv/bin/activate; \
+	safety check -r requirements.txt;
+
+.PHONY: static
+static:
+	# Skipping B310 because this is an external call and complains
+	# about the schema not being there (in config)
+	@. .venv/bin.activate; \
+	bandit -r -s B310 save_the_giphies

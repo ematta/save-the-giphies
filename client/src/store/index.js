@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Cookies from 'js-cookie';
 
 import {
   giphySearchApi,
@@ -14,7 +13,7 @@ import {
   getTagsToGiphyApi,
   removeTagFromGiphyApi,
 } from '@/api';
-import { isValidJwt, EventBus } from '@/utility';
+import { isValidJwt, jwtGetExpireTime, EventBus } from '@/utility';
 
 Vue.use(Vuex);
 
@@ -37,7 +36,18 @@ const store = new Vuex.Store({
   actions: {
     login(context, user) {
       return loginUserApi(user)
-        .then(response => context.commit('setJwt', response.data))
+        .then((response) => {
+          context.commit('setJwt', response.data);
+        })
+        .catch((error) => {
+          EventBus.$emit('errorMessage', error);
+        });
+    },
+    registerUser(context, user) {
+      return registerUserApi(user)
+        .then(() => {
+          EventBus.$emit('changeView', 'login');
+        })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
         });
@@ -47,12 +57,6 @@ const store = new Vuex.Store({
         .then((response) => {
           context.commit('setUser', response);
         })
-        .catch((error) => {
-          EventBus.$emit('errorMessage', error);
-        });
-    },
-    registerUser(context, user) {
-      return registerUserApi(user)
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
         });
@@ -87,7 +91,12 @@ const store = new Vuex.Store({
     },
     saveUserGiphy(context, giphyId) {
       return saveUserGiphyApi(giphyId, context.state.jwt)
-        .then(context.commit('setFlash', 'Saved gif'))
+        .then(() => {
+          context.dispatch('getUserGiphies')
+            .then(() => {
+              EventBus.$emit('changeView', 'profile');
+            });
+        })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
         });
@@ -103,6 +112,7 @@ const store = new Vuex.Store({
           });
           context.commit('setUserGiphies', newGiphies);
           context.commit('setGiphy', {});
+          EventBus.$emit('changeView', 'profile');
         })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
@@ -121,6 +131,7 @@ const store = new Vuex.Store({
       return getTagsToGiphyApi(giphyId, context.getters.jwt)
         .then((response) => {
           context.commit('setTags', response.data);
+          EventBus.$emit('changeView', 'giphy');
         })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
@@ -129,7 +140,10 @@ const store = new Vuex.Store({
     removeTagFromGiphy(context, payload) {
       return removeTagFromGiphyApi(payload, context.getters.jwt)
         .then(() => {
-          context.dispatch('getTagsToGiphy', payload.giphyId);
+          context.dispatch('getTagsToGiphy', payload.giphyId)
+            .then(() => {
+              EventBus.$emit('changeView', 'giphy');
+            });
         })
         .catch((error) => {
           EventBus.$emit('errorMessage', error);
@@ -149,10 +163,16 @@ const store = new Vuex.Store({
         });
     },
     checkIfLoggedInAlready(context) {
-      const token = Cookies.get('Token');
-      if (token && isValidJwt(token)) {
-        context.commit('setJwtSanCookie', token);
-      }
+      return new Promise((resolve) => {
+        const token = Vue.$cookies.get('token');
+        if (token && isValidJwt(token)) {
+          context.commit('setJwtSansCookie', token);
+          resolve();
+        }
+      })
+        .then(() => {
+          context.dispatch('getUserInfo');
+        });
     },
   },
   mutations: {
@@ -198,13 +218,12 @@ const store = new Vuex.Store({
     setJwt(state, payload) {
       state.jwt = payload.token;
       state.user = payload.user;
-      Cookies.set('Token', payload.token, { expires: 1 / 48, path: '' });
       state.isAuthenticated = isValidJwt(payload.token);
+      Vue.$cookies.set('token', payload.token, jwtGetExpireTime(payload.token));
     },
-    setJwtSanCookie(state, payload) {
-      state.jwt = payload.token;
-      state.user = payload.user;
-      state.isAuthenticated = isValidJwt(payload.token);
+    setJwtSansCookie(state, token) {
+      state.jwt = token;
+      state.isAuthenticated = isValidJwt(token);
     },
     setUser(state, user) {
       state.user.name = user.data.user.name;
@@ -214,8 +233,8 @@ const store = new Vuex.Store({
     logout(state) {
       state.jwt = '';
       state.user = {};
-      Cookies.remove('Token');
       state.isAuthenticated = false;
+      Vue.$cookies.remove('token');
     },
     setGiphy(state, giphy) {
       state.giphy = giphy;

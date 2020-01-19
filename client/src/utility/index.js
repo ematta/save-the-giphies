@@ -11,3 +11,8 @@ export function isValidJwt(jwt) {
   const now = new Date();
   return now < exp;
 }
+
+export function jwtGetExpireTime(jwt) {
+  const data = JSON.parse(atob(jwt.split('.')[1]));
+  return new Date(data.exp * 1000);
+}

@@ -23,7 +23,7 @@ def register() -> "Tuple[Response, int]":
     data: "Dict" = request.get_json()
     result: "Dict" = Users.register(**data)
     status: "int" = 201 if result["success"] else 501
-    return jsonify({"success": result["success"], "message": result["message"]}), status
+    return jsonify({"success": result["success"], "msg": result["msg"]}), status
 
 
 @bp.route("/login", methods=["POST"])
@@ -35,7 +35,7 @@ def login():
     data: "Dict" = request.get_json()
     result: "Dict" = Users.authenticate(**data)
     if not result["success"]:
-        return jsonify({"message": result["msg"], "authenticated": False}), 401
+        return jsonify({"msg": result["msg"], "authenticated": False}), 401
     user: "Users" = result["user"]
     token_data = {
         "sub": user.email,
@@ -47,7 +47,7 @@ def login():
         "token": token.decode("UTF-8"),
         "user": user.to_dict(),
         "success": True,
-        "message": "Registered user",
+        "msg": "Registered user",
     }
     return jsonify(response), 200
 

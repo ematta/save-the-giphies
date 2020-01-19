@@ -54,7 +54,7 @@ export default {
     async authenticate() {
       await this.$store.dispatch('login', { email: this.email, password: this.password });
       await this.$store.dispatch('getUserInfo');
-      await this.$root.$emit('changeView', 'search');
+      await EventBus.$emit('changeView', 'search');
     },
   },
   mounted() {

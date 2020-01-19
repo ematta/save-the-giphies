@@ -17,6 +17,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Pipeline check
+    - name: Install check
       run: |
-        cd client; make pipeline
+        cd client; npm install
+    - name: Audit check
+      run: |
+        cd client; npm audit
+    - name: Build check
+      run: |
+        cd client; npm build

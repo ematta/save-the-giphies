@@ -26,7 +26,7 @@ def save_tag(user: "Users", giphies_id: str, tag: str) -> "Tuple[Response, int]"
     result: "Dict" = Tags.save_tag(**{"giphies_id": giphy.id, "tag": tag})
     status = 201 if result["success"] else 400
     return (
-        jsonify({"success": result["success"], "message": result["msg"]}),
+        jsonify({"success": result["success"], "msg": result["msg"]}),
         status,
     )
 
@@ -63,6 +63,8 @@ def get_giphy_tags(user: "Users", giphies_id: str) -> "Tuple[Response, int]":
     Returns Tuple[Response, int]
     """
     results: "Dict" = Giphies.first_giphy(users_id=user.id, giphy=giphies_id)
-    giphy: "Giphies" = results["giphy"]
-    tags: "List[Tags]" = Tags.all_tags(giphies_id=giphy.id)
-    return jsonify([tag.to_dict() for tag in tags])
+    tags: "List[Tags]" = []
+    if results["success"]:
+        giphy: "Giphies" = results["giphy"]
+        tags = [tag.to_dict() for tag in Tags.all_tags(giphies_id=giphy.id)]
+    return jsonify(tags), 200

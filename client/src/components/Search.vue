@@ -8,12 +8,14 @@
   </div>
 </template>
 <script>
+import { EventBus } from '@/utility';
+
 export default {
   name: 'Search',
   methods: {
     async submit() {
       await this.$store.commit('setQuery', this.$refs.queryToSearch.value);
-      await this.$root.$emit('updatingResults');
+      await EventBus.$emit('updatingResults');
     },
   },
 };
