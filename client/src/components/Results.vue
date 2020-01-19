@@ -22,6 +22,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { EventBus } from '@/utility';
 
 export default {
   name: 'Results',
@@ -36,7 +37,7 @@ export default {
       const newPageNumber = this.page + 1;
       await this.$store.commit('setPage', newPageNumber);
       await this.$store.commit('setOffset', newPageNumber * 25);
-      await this.$root.$emit('updatingResults');
+      await EventBus.$emit('updatingResults');
     },
     async backwards() {
       if (this.page === 1) {
@@ -45,15 +46,15 @@ export default {
       const newPageNumber = this.page - 1;
       await this.$store.commit('setPage', newPageNumber);
       await this.$store.commit('setOffset', newPageNumber * 25);
-      await this.$root.$emit('updatingResults');
+      await EventBus.$emit('updatingResults');
     },
     async viewGiphy(giphyId) {
       await this.$store.dispatch('setSingleGiphyFromResults', giphyId);
-      await this.$root.$emit('changeView', 'giphy');
+      await EventBus.$emit('changeView', 'giphy');
     },
   },
-  async mounted() {
-    await this.$root.$on('updatingResults', () => {
+  created() {
+    EventBus.$on('updatingResults', () => {
       this.$store.dispatch('giphySearch');
     });
   },

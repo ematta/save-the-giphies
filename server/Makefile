@@ -7,11 +7,22 @@ all: install
 	DEBUG=True python app.py
 
 .PHONY: check-code
-check-code: 
+check-code: install mypy black flake8 static packages
+
+.PHONY: mypy
+mypy:
 	@. .venv/bin/activate; \
-	mypy save_the_giphies; \
+	mypy save_the_giphies;
+
+.PHONY: black
+black:
+	@. .venv/bin/activate; \
 	black save_the_giphies --exclude .venv; \
-	flake8 save_the_giphies --exclude .venv
+
+.PHONY: flake8
+flake8:
+	@. .venv/bin/activate; \
+	flake8 save_the_giphies --exclude .venv -v;
 
 .PHONY: check-tests
 check-tests: 
@@ -43,14 +54,19 @@ functional-test:
 	python -m unittest discover tests/functional -v
 
 .PHONY: integration-test
-integration-test:
+integration-test: report
 	@. .venv/bin/activate; \
-	python -m unittest discover tests/integration -v
+	coverage run -m unittest discover tests/integration -v
 
 .PHONY: unit-test
-unit-test:
+unit-test: report
 	@. .venv/bin/activate; \
-	python -m unittest discover tests/unit -v
+	coverage run -m unittest discover tests/unit -v
+
+.PHONY: report
+report:
+	@. .venv/bin/activate; \
+	coverage html
 
 .PHONY: tests
 tests: check-tests unit-test integration-test functional-test
@@ -63,4 +79,16 @@ pipeline:
 	&& black save_the_giphies --exclude .venv \
 	&& flake8 save_the_giphies --exclude .venv \
 	&& python -m unittest discover tests/integration -v \
-	&& python -m unittest discover tests/unit -v
+	&& python -m unittest discover tests/unit -v;
+
+.PHONY: packages
+packages:
+	@. .venv/bin/activate; \
+	safety check -r requirements.txt;
+
+.PHONY: static
+static:
+	# Skipping B310 because this is an external call and complains
+	# about the schema not being there (in config)
+	@. .venv/bin.activate; \
+	bandit -r -s B310 save_the_giphies

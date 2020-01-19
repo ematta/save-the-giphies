@@ -78,7 +78,7 @@ export default {
     };
   },
   mounted() {
-    this.$root.$on('changeView', (view) => {
+    EventBus.$on('changeView', (view) => {
       this.$store.commit('setView', view);
     });
     EventBus.$on('errorMessage', (msg) => {
@@ -90,23 +90,23 @@ export default {
       this.$store.commit('setErrorMessage', '');
     },
     async setSearch() {
-      await this.$root.$emit('changeView', 'search');
+      await EventBus.$emit('changeView', 'search');
     },
     async setLogin() {
-      await this.$root.$emit('changeView', 'login');
+      await EventBus.$emit('changeView', 'login');
     },
     async setProfile() {
       await this.$store.dispatch('getUserGiphies')
         .then(() => {
-          this.$root.$emit('changeView', 'profile');
+          EventBus.$emit('changeView', 'profile');
         });
     },
     async setRegister() {
-      await this.$root.$emit('changeView', 'register');
+      await EventBus.$emit('changeView', 'register');
     },
     async logout() {
       await this.$store.commit('logout');
-      await this.$root.$emit('changeView', 'search');
+      await EventBus.$emit('changeView', 'search');
     },
   },
   beforeDestroy() {

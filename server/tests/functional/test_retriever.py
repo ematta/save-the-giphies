@@ -14,3 +14,10 @@ class TestRetriever(unittest.TestCase):
         self.assertTrue(len(res) > 0)
         for data in res:
             self.assertTrue(data["rating"] == "g")
+
+    def test_single_giphy(self):
+        test_id = "xT4uQulxzV39haRFjG"
+        payload = self.retriever.retrieve_giphy(test_id)
+        self.assertIsInstance(payload, dict)
+        self.assertIn(payload["data"]["id"], test_id)
+        self.assertTrue(payload["data"]["rating"] == "pg")

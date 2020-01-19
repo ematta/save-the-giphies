@@ -65,31 +65,16 @@ export default {
       ).then(this.$refs.addTagInput.value = '');
     },
     async deleteGiphy() {
-      await this.$store.dispatch('deleteUserGiphy', this.giphy.id)
-        .then(() => {
-          this.$root.$emit('changeView', 'profile');
-        });
+      await this.$store.dispatch('deleteUserGiphy', this.giphy.id);
     },
     async saveGiphy() {
-      await this.$store.dispatch('saveUserGiphy', this.giphy.id)
-        .then(() => {
-          this.$store.dispatch('getUserGiphies')
-            .then(() => {
-              this.$root.$emit('changeView', 'profile');
-            });
-        });
+      await this.$store.dispatch('saveUserGiphy', this.giphy.id);
     },
     async getTags() {
-      await this.$store.dispatch('getTagsToGiphy', this.giphy.id)
-        .then(() => {
-          this.$root.$emit('changeView', 'giphy');
-        });
+      await this.$store.dispatch('getTagsToGiphy', this.giphy.id);
     },
     async removeTag(tagId) {
-      await this.$store.dispatch('removeTagFromGiphy', { giphyId: this.giphy.id, tag: tagId })
-        .then(() => {
-          this.$root.$emit('changeView', 'giphy');
-        });
+      await this.$store.dispatch('removeTagFromGiphy', { giphyId: this.giphy.id, tag: tagId });
     },
   },
 };
