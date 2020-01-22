@@ -11,6 +11,14 @@ export function giphySearchApi(data) {
   });
 }
 
+export function giphySearchSingleApi(giphyId) {
+  const url = `${path}/giphy/search/${giphyId}`;
+  return axios({
+    method: 'get',
+    url,
+  });
+}
+
 export function addTagToGiphyApi(payload, jwt) {
   const url = `${path}/tags/${payload.giphyId}/${payload.tag}`;
   const headers = { Authorization: `Bearer: ${jwt}` };
@@ -42,7 +50,7 @@ export function removeTagFromGiphyApi(payload, jwt) {
 }
 
 export function saveUserGiphyApi(giphyId, jwt) {
-  const url = `${path}/giphy/user/${giphyId}`;
+  const url = `${path}/user/giphy/${giphyId}`;
   const headers = { Authorization: `Bearer: ${jwt}` };
   return axios({
     method: 'post',
@@ -52,7 +60,7 @@ export function saveUserGiphyApi(giphyId, jwt) {
 }
 
 export function deleteUserGiphyApi(giphyId, jwt) {
-  const url = `${path}/giphy/user/${giphyId}`;
+  const url = `${path}/user/giphy/${giphyId}`;
   const headers = { Authorization: `Bearer: ${jwt}` };
   return axios({
     method: 'delete',
@@ -62,7 +70,7 @@ export function deleteUserGiphyApi(giphyId, jwt) {
 }
 
 export function getUserGiphiesApi(jwt) {
-  const url = `${path}/giphy/user`;
+  const url = `${path}/user/giphy`;
   const headers = { Authorization: `Bearer: ${jwt}` };
   return axios({
     method: 'get',

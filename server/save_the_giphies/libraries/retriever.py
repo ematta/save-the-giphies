@@ -36,7 +36,7 @@ class Retriever:
         res: "HTTPResponse" = urlopen(host)
         body: "bytes" = res.read()
         payload: "Dict" = json.loads(body.decode("utf-8"))
-        return payload
+        return payload["data"]
 
     def retrieve_giphies(
         self,

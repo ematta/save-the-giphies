@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-
+import router from '@/router';
 import {
   giphySearchApi,
   loginUserApi,
@@ -12,8 +12,9 @@ import {
   addTagToGiphyApi,
   getTagsToGiphyApi,
   removeTagFromGiphyApi,
+  giphySearchSingleApi,
 } from '@/api';
-import { isValidJwt, jwtGetExpireTime, EventBus } from '@/utility';
+import { isValidJwt, jwtGetExpireTime } from '@/utility';
 
 Vue.use(Vuex);
 
@@ -24,7 +25,6 @@ const store = new Vuex.Store({
     offset: 0,
     limit: 25,
     page: 1,
-    view: 'search',
     jwt: '',
     user: {},
     errorMessage: '',
@@ -40,16 +40,16 @@ const store = new Vuex.Store({
           context.commit('setJwt', response.data);
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     registerUser(context, user) {
       return registerUserApi(user)
         .then(() => {
-          EventBus.$emit('changeView', 'login');
+          router.push({ name: 'Login' });
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     getUserInfo(context) {
@@ -58,7 +58,7 @@ const store = new Vuex.Store({
           context.commit('setUser', response);
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     giphySearch(context) {
@@ -72,15 +72,11 @@ const store = new Vuex.Store({
           context.commit('setResults', response.data);
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
-    setSingleGiphy(context, giphyId) {
-      context.getters.giphies.forEach((giphy) => {
-        if (giphyId === giphy.id) {
-          context.commit('setGiphy', giphy);
-        }
-      });
+    setSingleGiphy(context, giphy) {
+      context.commit('setGiphy', giphy);
     },
     setSingleGiphyFromResults(context, giphyId) {
       context.getters.results.forEach((giphy) => {
@@ -94,11 +90,11 @@ const store = new Vuex.Store({
         .then(() => {
           context.dispatch('getUserGiphies')
             .then(() => {
-              EventBus.$emit('changeView', 'profile');
+              router.push({ name: 'Profile' });
             });
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     deleteUserGiphy(context, giphyId) {
@@ -112,10 +108,10 @@ const store = new Vuex.Store({
           });
           context.commit('setUserGiphies', newGiphies);
           context.commit('setGiphy', {});
-          EventBus.$emit('changeView', 'profile');
+          router.push({ name: 'Profile' });
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     addTagToGiphy(context, payload) {
@@ -124,17 +120,17 @@ const store = new Vuex.Store({
           context.dispatch('getTagsToGiphy', payload.giphyId);
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     getTagsToGiphy(context, giphyId) {
       return getTagsToGiphyApi(giphyId, context.getters.jwt)
         .then((response) => {
           context.commit('setTags', response.data);
-          EventBus.$emit('changeView', 'giphy');
+          router.push({ name: 'Giphy', params: { giphyId } });
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     removeTagFromGiphy(context, payload) {
@@ -142,11 +138,20 @@ const store = new Vuex.Store({
         .then(() => {
           context.dispatch('getTagsToGiphy', payload.giphyId)
             .then(() => {
-              EventBus.$emit('changeView', 'giphy');
+              router.push({ name: 'Giphy', params: { giphyId: payload.giphyId } });
             });
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
+        });
+    },
+    giphySearchSingle(context, giphyId) {
+      giphySearchSingleApi(giphyId)
+        .then((response) => {
+          context.commit('setGiphy', response.data);
+        })
+        .catch((error) => {
+          context.commit('setErrorMessage', error);
         });
     },
     getUserGiphies(context) {
@@ -154,12 +159,12 @@ const store = new Vuex.Store({
         .then((response) => {
           const userGiphies = [];
           response.data.forEach((giphy) => {
-            userGiphies.push(giphy.data);
+            userGiphies.push(giphy);
           });
           context.commit('setUserGiphies', userGiphies);
         })
         .catch((error) => {
-          EventBus.$emit('errorMessage', error);
+          context.commit('setErrorMessage', error);
         });
     },
     checkIfLoggedInAlready(context) {
@@ -212,9 +217,6 @@ const store = new Vuex.Store({
     setPage(state, page) {
       state.page = page;
     },
-    setView(state, view) {
-      state.view = view;
-    },
     setJwt(state, payload) {
       state.jwt = payload.token;
       state.user = payload.user;
@@ -245,7 +247,6 @@ const store = new Vuex.Store({
     offset: state => state.offset,
     limit: state => state.limit,
     page: state => state.page,
-    view: state => state.view,
     jwt: state => state.jwt,
     user: state => state.user,
     giphies: state => state.giphies,

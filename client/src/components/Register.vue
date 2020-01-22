@@ -40,8 +40,6 @@
 </template>
 
 <script>
-import { EventBus } from '@/utility';
-
 export default {
   data() {
     return {
@@ -55,14 +53,6 @@ export default {
     async register() {
       await this.$store.dispatch('registerUser', { name: this.name, email: this.email, password: this.password });
     },
-  },
-  mounted() {
-    EventBus.$on('failedRegistering', (msg) => {
-      this.errorMsg = msg;
-    });
-  },
-  beforeDestroy() {
-    EventBus.$off('failedRegistering');
   },
 };
 </script>
