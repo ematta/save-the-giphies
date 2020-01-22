@@ -1,3 +1,7 @@
+# CLOSING OUT
+
+A lot of lessons were learned here and I am moving the effort over to [my main site's codebase](https://github.com/ematta/matta.dev). Thank you for following this short journey.
+
 ## Save the giphies
 
 Documentation in progress, but here is how we can get you up and running for now.
