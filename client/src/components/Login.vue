@@ -30,7 +30,13 @@
         </div>
 
         <div class="control">
-          <a class="button is-large is-primary" @click="authenticate">Login</a>
+          <router-link
+            class="button is-large is-primary"
+            v-on:click.native="authenticate"
+            :to="{ name: 'Search' }"
+          >
+            Login
+          </router-link>
         </div>
 
       </div>
@@ -40,8 +46,6 @@
 </template>
 
 <script>
-import { EventBus } from '@/utility';
-
 export default {
   data() {
     return {
@@ -51,19 +55,10 @@ export default {
     };
   },
   methods: {
-    async authenticate() {
-      await this.$store.dispatch('login', { email: this.email, password: this.password });
-      await this.$store.dispatch('getUserInfo');
-      await EventBus.$emit('changeView', 'search');
+    authenticate() {
+      this.$store.dispatch('login', { email: this.email, password: this.password });
+      this.$store.dispatch('getUserInfo');
     },
-  },
-  mounted() {
-    EventBus.$on('failedRegistering', (msg) => {
-      this.errorMsg = msg;
-    });
-  },
-  beforeDestroy() {
-    EventBus.$off('failedRegistering');
   },
 };
 </script>

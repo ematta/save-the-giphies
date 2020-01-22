@@ -2,25 +2,25 @@
   <div>
     <img :src="giphy.images.original.url" />
     <div v-if="isAuthenticated">
-      <div>
-        <a class="button is-large is-primary" @click.stop="deleteGiphy">Delete</a>
-      </div>
-      <div v-if="!inAccount">
+      <div v-if="giphyAttachedToAccount">
         <a class="button is-large is-primary" @click.stop="saveGiphy">Save</a>
       </div>
-      <div v-if="inAccount">
-        Tag:
-        <input
-          ref="addTagInput"
-          placeholder="Press enter to tag"
-          @keyup.enter="addTag"
-        />
-      </div>
-      <div v-if="tags.length > 0" :key="tags.legnth">
-        Tags set for this giphy (click to remove):
-        <br />
-        <div v-for="tag in tags" :key="tag.id">
-          <a @click.stop="removeTag(tag.id)"> {{ tag.tag }} </a>
+      <div v-else>
+        <a class="button is-large is-primary" @click.stop="deleteGiphy">Delete</a>
+        <div>
+          Tag:
+          <input
+            ref="addTagInput"
+            placeholder="Press enter to tag"
+            @keyup.enter="addTag"
+          />
+        </div>
+        <div v-if="tags.length > 0" :key="tags.legnth">
+          Tags set for this giphy (click to remove):
+          <br />
+          <div v-for="tag in tags" :key="tag.id">
+            <a @click.stop="removeTag(tag.id)"> {{ tag.tag }} </a>
+          </div>
         </div>
       </div>
     </div>
@@ -39,18 +39,14 @@ export default {
   ]),
   data() {
     return {
-      inAccount: false,
+      giphyId: this.$route.params.giphyId,
+      giphyAttachedToAccount: false,
     };
   },
   beforeMount() {
+    this.$store.dispatch('giphySearchSingle', this.$route.params.giphyId);
     if (this.isAuthenticated) {
-      this.$store.dispatch('getUserGiphies').then(() => {
-        this.$store.getters.giphies.forEach((giphy) => {
-          if (this.giphy.id === giphy.id) {
-            this.inAccount = true;
-          }
-        });
-      });
+      this.giphyAttachedToAccount = this._.isEmpty(this.$store.getters.giphy);
       this.getTags();
     }
   },
